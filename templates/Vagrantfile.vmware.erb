@@ -126,18 +126,18 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # - Ref: [Box Versioning | Vagrant | HashiCorp Developer](https://developer.hashicorp.com/vagrant/docs/boxes/versioning)
   # - Default: ">= 0" (latest)
   #
-  # <% if box_version -%>
-  # config.vm.box_version = "<%= box_version %>"
-  # <% else -%>
-  # config.vm.box_version = ">= 0"
-  # <% end -%>
+  <% if box_version -%>
+  config.vm.box_version = "<%= box_version %>"
+  <% else -%>
+  config.vm.box_version = ">= 0"
+  <% end -%>
 
-  # # URL of Vagrant Box to download:
-  # <% if box_url -%>
-  # config.vm.box_url = "<%= box_url %>"
-  # <% else -%>
-  # #config.vm.box_url = ""
-  # <% end -%>
+  # URL of Vagrant Box to download:
+  <% if box_url -%>
+  config.vm.box_url = "<%= box_url %>"
+  <% else -%>
+  #config.vm.box_url = ""
+  <% end -%>
 
   # Name of VM:
   # used by Vagrant
@@ -188,7 +188,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   #
   config.vm.communicator = "ssh"
 
-  # Disable the default Vagrant synced folder "/vagrant". Un-comment to enable:
+  # Disable the default Vagrant synced folder "/vagrant". Comment to enable:
   #
   # - Ref: [Basic Usage - Synced Folders | Vagrant | HashiCorp Developer](https://developer.hashicorp.com/vagrant/docs/synced-folders/basic_usage)
   #
