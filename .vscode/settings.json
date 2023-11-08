@@ -1,3 +1,9 @@
 {
-    "ansible.python.interpreterPath": "/usr/local/bin/python3"
+    "ansible.python.interpreterPath": "/usr/local/bin/python3",
+    "files.associations": {
+        "*plays.yml": "ansible",
+        "*init.yml": "yaml",
+        "Vagrantfile": "ruby",
+        "*.erb": "ruby",
+      }
 }
