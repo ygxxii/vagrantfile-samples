@@ -103,6 +103,18 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   ###   config.proxy.no_proxy = "localhost,127.0.0.1"
   ### end
   
+  # Settings for 'vagrant-hostmanager' plugin:
+  #
+  # - Ref: [devopsgroup-io/vagrant-hostmanager](https://github.com/devopsgroup-io/vagrant-hostmanager)
+  #
+  # if Vagrant.has_plugin?("vagrant-hostmanager")
+  #   config.hostmanager.enabled = true
+  #   config.hostmanager.manage_host = true
+  #   config.hostmanager.manage_guest = true
+  #   config.hostmanager.ignore_private_ip = false
+  #   config.hostmanager.include_offline = true
+  # end
+
   # Vagrant Box:
   #
   # - Ref: [Install and Specify a Box | Vagrant | HashiCorp Developer](https://developer.hashicorp.com/vagrant/tutorials/getting-started/getting-started-boxes)
@@ -264,7 +276,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # Enable provisioning with a shell script:
   #
-  # Ref:[Shell Scripts - Provisioning | Vagrant | HashiCorp Developer](https://developer.hashicorp.com/vagrant/docs/provisioning/shell)
+  # - Ref:[Shell Scripts - Provisioning | Vagrant | HashiCorp Developer](https://developer.hashicorp.com/vagrant/docs/provisioning/shell)
   #
   config.vm.provision "shell", inline: <<-'SHELL_SCRIPT'
     echo " ====== Linux: Recording box generation date ====> "
