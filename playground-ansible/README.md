@@ -9,9 +9,11 @@ A simple test playground to use Vagrant Ansible Provisioner.
 
 1. Install Ansible on Vagrant host.
 
-2. Edit Ansible Playbook file `playbook.yml`.
+2. Setup `vagrant-hostmanager` [Passwordless sudo](https://github.com/devopsgroup-io/vagrant-hostmanager#passwordless-sudo).
 
-3. Spin up Vagrant guest:
+3. Edit Ansible Playbook file `playbook.yml`.
+
+4. Spin up Vagrant guest:
 
     ```bash
     vagrant up
