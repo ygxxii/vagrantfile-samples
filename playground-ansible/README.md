@@ -9,9 +9,16 @@ A simple test playground to use Vagrant Ansible Provisioner.
 
 1. Install Ansible on Vagrant host.
 
-2. Setup `vagrant-hostmanager` [Passwordless sudo](https://github.com/devopsgroup-io/vagrant-hostmanager#passwordless-sudo).
+2. (Optional) Un-comment `vagrant-hostmanager` settings in `Vagrantfile`.
 
-3. Spin up Vagrant guest:
+    ```ruby
+    config.hostmanager.manage_host = true
+    ```
+
+
+3. (Optional) Setup `vagrant-hostmanager` [Passwordless sudo](https://github.com/devopsgroup-io/vagrant-hostmanager#passwordless-sudo).
+
+4. Spin up Vagrant guest:
 
     ```bash
     vagrant up
