@@ -2,6 +2,9 @@
 
 A simple test playground to use Vagrant Ansible Provisioner.
 
+- Hypervisor: Parallels Desktop
+- Guest OS: RockyLinux 8
+
 ## Spin-up
 
 1. Install Ansible on Vagrant host.
