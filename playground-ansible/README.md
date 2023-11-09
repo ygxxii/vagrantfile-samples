@@ -6,11 +6,9 @@ A simple test playground to use Vagrant Ansible Provisioner.
 
 1. Install Ansible on Vagrant host.
 
-2. (Optional) Edit variable `VM_NAME` in `Vagrantfile` to a proper VM name.
+2. Edit Ansible Playbook file `playbook.yml`.
 
-3. Edit Ansible Playbook file `playbook.yml`.
-
-4. Spin up Vagrant guest:
+3. Spin up Vagrant guest:
 
     ```bash
     vagrant up
@@ -41,13 +39,19 @@ A simple test playground to use Vagrant Ansible Provisioner.
     vagrant provision --provision-with ansible
     ```
 
-- run Ansible Playbook by `ansible` on Vagrant host:
+- Run Ansible Playbook by `ansible` on Vagrant host:
 
     ```bash
     ansible all -i host.yml -m ping
     ```
 
-- Update hosts managed by `vagrant-hostmanager`:
+## Change VM hostname
+
+1. Edit variable `VM_NAME` in `Vagrantfile` to a proper VM name.
+
+2. Edit hostname in Ansible Inventory `host.yml`.
+
+3. Update hosts managed by `vagrant-hostmanager`:
 
     ```bash
     vagrant hostmanager
