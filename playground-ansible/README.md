@@ -11,9 +11,7 @@ A simple test playground to use Vagrant Ansible Provisioner.
 
 2. Setup `vagrant-hostmanager` [Passwordless sudo](https://github.com/devopsgroup-io/vagrant-hostmanager#passwordless-sudo).
 
-3. Edit Ansible Playbook file `playbook.yml`.
-
-4. Spin up Vagrant guest:
+3. Spin up Vagrant guest:
 
     ```bash
     vagrant up
@@ -21,36 +19,46 @@ A simple test playground to use Vagrant Ansible Provisioner.
 
 ## Usage
 
-- SSH login to Vagrant guest:
+### Run Ansible Playbook
 
-    ```bash
-    vagrant ssh
-    ```
+Ansible Playbook is run when VM first boot. To rerun Ansible Playbook:
 
-    or:
+1. Edit Ansible Playbook file `playbook.yml`.
 
-    ```bash
-    ssh vagrant@<vagrant-guest-hostname> \
-        -i .vagrant/machines/<vagrant-guest-hostname>/parallels/private_key
+2. Rerun Ansible Playbook:
 
-    # e.g.
-    # ssh vagrant@ansible-playground-rocky8 \
-    #     -i .vagrant/machines/ansible-playground-rocky8/parallels/private_key
-    ```
+    - Method 1: rerun Ansible Playbook when guest is running:
 
-- Rerun Ansible Playbook when guest is running:
+        ```bash
+        vagrant provision --provision-with ansible
+        ```
 
-    ```bash
-    vagrant provision --provision-with ansible
-    ```
+    - Method 2: rerun Ansible Playbook by `ansible`:
 
-- Run Ansible Playbook by `ansible` on Vagrant host:
+        ```bash
+        ansible all -i host.yml -m ping
+        ```
 
-    ```bash
-    ansible all -i host.yml -m ping
-    ```
+### SSH login
 
-## Change VM hostname
+SSH login to Vagrant guest:
+
+```bash
+vagrant ssh
+```
+
+or:
+
+```bash
+ssh vagrant@<vagrant-guest-hostname> \
+    -i .vagrant/machines/<vagrant-guest-hostname>/parallels/private_key
+
+# e.g.
+# ssh vagrant@ansible-playground-rocky8 \
+#     -i .vagrant/machines/ansible-playground-rocky8/parallels/private_key
+```
+
+### Change VM hostname
 
 1. Edit variable `VM_NAME` in `Vagrantfile` to a proper VM name.
 
