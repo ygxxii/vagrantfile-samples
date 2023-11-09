@@ -1,8 +1,8 @@
-## Vagrantfile: Ansible Playground
+# Vagrantfile: Ansible Playground
 
 A simple test playground to use Vagrant Ansible Provisioner.
 
-## Usage
+## Spin-up
 
 1. Install Ansible on Vagrant host.
 
@@ -16,8 +16,39 @@ A simple test playground to use Vagrant Ansible Provisioner.
     vagrant up
     ```
 
-5. Rerun Ansible Playbook when guest is running:
+## Usage
+
+- SSH login to Vagrant guest:
+
+    ```bash
+    vagrant ssh
+    ```
+
+    or:
+
+    ```bash
+    ssh vagrant@<vagrant-guest-hostname> \
+        -i .vagrant/machines/<vagrant-guest-hostname>/parallels/private_key
+
+    # e.g.
+    # ssh vagrant@ansible-playground-rocky8 \
+    #     -i .vagrant/machines/ansible-playground-rocky8/parallels/private_key
+    ```
+
+- Rerun Ansible Playbook when guest is running:
 
     ```bash
     vagrant provision --provision-with ansible
+    ```
+
+- run Ansible Playbook by `ansible` on Vagrant host:
+
+    ```bash
+    ansible all -i host.yml -m ping
+    ```
+
+- Update hosts managed by `vagrant-hostmanager`:
+
+    ```bash
+    vagrant hostmanager
     ```
