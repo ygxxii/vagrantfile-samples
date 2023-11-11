@@ -61,13 +61,13 @@ ssh vagrant@<vagrant-guest-hostname> \
     -i .vagrant/machines/<vagrant-guest-hostname>/parallels/private_key
 
 # e.g.
-# ssh vagrant@ansible-playground-rocky8 \
-#     -i .vagrant/machines/ansible-playground-rocky8/parallels/private_key
+# ssh vagrant@playground-ansible-rocky8 \
+#     -i .vagrant/machines/playground-ansible-rocky8/parallels/private_key
 ```
 
 ### Change VM hostname
 
-1. Edit variable `VM_NAME` in `Vagrantfile` to a proper VM name.
+1. Edit variable `HOST_NAME` in `Vagrantfile` to a proper VM name.
 
 2. Edit hostname in Ansible Inventory `host.yml`.
 
