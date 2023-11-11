@@ -104,6 +104,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   ###   config.proxy.http     = "http://<proxy-server>:<proxy-port>"
   ###   config.proxy.https    = "http://<proxy-server>:<proxy-port>"
   ###   config.proxy.no_proxy = "localhost,127.0.0.1"
+  ###   # config.proxy.enabled = { yum: false }
   ### end
   
   # Settings for 'vagrant-hostmanager' plugin:
