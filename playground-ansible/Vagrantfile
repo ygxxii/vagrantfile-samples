@@ -92,7 +92,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   ### config.vagrant.plugins = "vagrant-plugin"
   ### config.vagrant.plugins = ["vagrant-plugin", "vagrant-other-plugin"]
   #
-  config.vagrant.plugins = ["vagrant-parallels", "vagrant-proxyconf"]
+  config.vagrant.plugins = ["vagrant-parallels", "vagrant-proxyconf", "vagrant-hostmanager"]
   
   # Settings for 'vagrant-proxyconf' plugin:
   #
