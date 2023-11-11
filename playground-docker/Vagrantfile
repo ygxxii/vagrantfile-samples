@@ -21,7 +21,7 @@
 # - Ref: [oracle/vagrant-projects: Vagrant projects for Oracle products and other examples](https://github.com/oracle/vagrant-projects)
 # - Souce code: [vagrant/lib/vagrant/ui.rb at main · hashicorp/vagrant · GitHub](https://github.com/hashicorp/vagrant/blob/main/lib/vagrant/ui.rb)
 #
-ui = Vagrant::UI::Prefixed.new(Vagrant::UI::Colored.new, "vagrant")
+#ui = Vagrant::UI::Prefixed.new(Vagrant::UI::Colored.new, "vagrant")
 #
 # - Usage:
 ### ui.info "This is an info"
@@ -31,7 +31,9 @@ ui = Vagrant::UI::Prefixed.new(Vagrant::UI::Colored.new, "vagrant")
 
 # Variables to set:
 #
-VM_NAME = "docker-playground-rocky8"
+VM_NAME = "playground-docker-rocky8"
+HOST_NAME = VM_NAME
+# HOST_NAME = "playground-docker-rocky8"
 
 
 # Host Locale Environment Variables:
@@ -92,7 +94,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   ### config.vagrant.plugins = "vagrant-plugin"
   ### config.vagrant.plugins = ["vagrant-plugin", "vagrant-other-plugin"]
   #
-  config.vagrant.plugins = ["vagrant-parallels", "vagrant-proxyconf"]
+  config.vagrant.plugins = ["vagrant-parallels", "vagrant-proxyconf", "vagrant-hostmanager"]
   
   # Settings for 'vagrant-proxyconf' plugin:
   #
@@ -102,19 +104,20 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   ###   config.proxy.http     = "http://<proxy-server>:<proxy-port>"
   ###   config.proxy.https    = "http://<proxy-server>:<proxy-port>"
   ###   config.proxy.no_proxy = "localhost,127.0.0.1"
+  ###   # config.proxy.enabled = { yum: false }
   ### end
   
   # Settings for 'vagrant-hostmanager' plugin:
   #
   # - Ref: [devopsgroup-io/vagrant-hostmanager](https://github.com/devopsgroup-io/vagrant-hostmanager)
   #
-  # if Vagrant.has_plugin?("vagrant-hostmanager")
-  #   config.hostmanager.enabled = true
-  #   config.hostmanager.manage_host = true
-  #   config.hostmanager.manage_guest = true
-  #   config.hostmanager.ignore_private_ip = false
-  #   config.hostmanager.include_offline = true
-  # end
+  if Vagrant.has_plugin?("vagrant-hostmanager")
+    config.hostmanager.enabled = true
+    # config.hostmanager.manage_host = true
+    config.hostmanager.manage_guest = true
+    config.hostmanager.ignore_private_ip = false
+    config.hostmanager.include_offline = true
+  end
 
   # Vagrant Box:
   #
@@ -139,7 +142,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # - Default: "default"
   # - Note: Do not change this after 'vagrant up' !
   #
-  config.vm.define "#{VM_NAME.downcase}"
+  config.vm.define VM_NAME
 
   # Hostname in VM:
   # used by VM, '[vagrant@hotname]'
@@ -147,7 +150,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # - Default: "nil" (Vagrant will not manage the hostname)
   # - Note: To change this option after VM is created, execute 'vagrant reload' is required.
   #
-  config.vm.hostname = "#{VM_NAME.downcase}"
+  config.vm.hostname = "#{HOST_NAME.downcase}"
 
   # VM OS Type:
   # Vagrant will auto-detect
@@ -205,7 +208,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # 
     # - Note: To change this option after VM is created, execute 'vagrant reload' is required.
     #
-    prl.name = "#{VM_NAME.downcase}"
+    prl.name = VM_NAME
     
     # Full Clone / Linked Clone:
     # 
@@ -229,7 +232,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     #     - 'true': Turn on Auto-Update
     # - Default: 'false'
     #
-    prl.update_guest_tools = true
+    prl.update_guest_tools = false
     
     # VM memory size:
     #
@@ -277,6 +280,37 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     
     # echo " ====== Linux: Set Timezone ====> "
     # timedatectl set-timezone "Asia/Shanghai"
+
+    echo " ====== DNF: Install Docker REPO From Mirror ====> "
+    yum-config-manager --add-repo=https://download.docker.com/linux/centos/docker-ce.repo
+    
+    echo " ====== DNF: Import Docker REPO GPG Key ====> "
+    rpm --import https://download.docker.com/linux/centos/gpg
+    
+    echo " ====== DNF: Config Docker REPO Mirror ====> "
+    sed -e 's|^\(baseurl\s*=\s*\)https://download.docker.com|\1https://mirrors.tuna.tsinghua.edu.cn/docker-ce|g' \
+        -i.default \
+        /etc/yum.repos.d/docker-ce.repo
+
+    echo " ====== DNF: Install Docker & Docker Compose v2 ====> "
+    yum remove docker \
+                    docker-client \
+                    docker-client-latest \
+                    docker-common \
+                    docker-latest \
+                    docker-latest-logrotate \
+                    docker-logrotate \
+                    docker-engine
+    yum -y install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+
+    echo " ====== systemd: Start docker.service ====> "
+    systemctl start docker
+    systemctl enable docker
+    systemctl status docker --no-pager -l
+
+    echo " ====== Linux: Add user vagrant to group docker ====> "
+    usermod -aG docker vagrant
+
   SHELL_SCRIPT
 
   # Enable provisioning with Ansible Playbook:
@@ -367,9 +401,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
 You can run following commands on the host:
 
-To SSH login to VM:                 'vagrant ssh #{VM_NAME.downcase}'
+To SSH login to VM by Vagrant:      'vagrant ssh #{VM_NAME}'
+To SSH login to VM by ssh:          'ssh vagrant@#{HOST_NAME} -i .vagrant/machines/#{HOST_NAME}/parallels/private_key'
 To check VM's status by Vagrant:    'vagrant status'
-To check VM's status by prlctl:     'prlctl list #{VM_NAME.downcase}'
+To check VM's status by prlctl:     'prlctl list #{VM_NAME}'
 To get all Vagrant sub-commands:    'vagrant list-commands'
 To rerun Ansible Playbooks:         'vagrant provision --provision-with ansible'
 
