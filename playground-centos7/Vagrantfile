@@ -295,7 +295,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         -e 's|^#baseurl=https\?://download.*/pub/epel/|baseurl=https://mirrors.tuna.tsinghua.edu.cn/epel/|g' \
         -i.default \
         /etc/yum.repos.d/epel.repo /etc/yum.repos.d/epel-testing.repo
-    yum makecache
+    yum --disablerepo=* --enablerepo=epel makecache
    
     echo " ====== YUM: Install Packages ====> "
     yum -y install \
