@@ -31,9 +31,9 @@
 
 # Variables to set:
 #
-VM_NAME = "centos7-test-standalone"
+VM_NAME = "playground-centos7"
 HOST_NAME = VM_NAME
-# HOST_NAME = "centos7-test-standalone"
+# HOST_NAME = "playground-centos7"
 
 # Host Locale Environment Variables:
 #
