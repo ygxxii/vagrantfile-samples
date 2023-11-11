@@ -31,9 +31,9 @@
 
 # Variables to set:
 #
-VM_NAME = "playground-ansible-rocky8"
+VM_NAME = "playground-rocky8"
 HOST_NAME = VM_NAME
-# HOST_NAME = "playground-ansible-rocky8"
+# HOST_NAME = "playground-rocky8"
 
 
 # Host Locale Environment Variables:
