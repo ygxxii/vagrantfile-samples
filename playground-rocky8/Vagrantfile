@@ -322,10 +322,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   #
   # - Ref: [Ansible - Provisioning | Vagrant | HashiCorp Developer](https://developer.hashicorp.com/vagrant/docs/provisioning/ansible)
   #
-  config.vm.provision "ansible" do |ansible|
-    ansible.playbook           = "playbook.yml"
-    ansible.compatibility_mode = "2.0"
-  end
+  # config.vm.provision "ansible" do |ansible|
+  #   ansible.playbook           = "playbook.yml"
+  #   ansible.compatibility_mode = "2.0"
+  # end
 
   # Automatic box update checking:
   #
