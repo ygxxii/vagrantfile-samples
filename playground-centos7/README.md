@@ -21,3 +21,34 @@ A simple test playground for CentOS 7.
     ```bash
     vagrant up
     ```
+
+## Usage
+
+### SSH login
+
+SSH login to Vagrant guest:
+
+```bash
+vagrant ssh
+```
+
+or:
+
+```bash
+ssh vagrant@<vagrant-guest-hostname> \
+    -i .vagrant/machines/<vagrant-guest-hostname>/parallels/private_key
+
+# e.g.
+# ssh vagrant@centos7-test-standalone \
+#     -i .vagrant/machines/centos7-test-standalone/parallels/private_key
+```
+
+### Change VM hostname
+
+1. Edit variable `VM_NAME` in `Vagrantfile` to a proper VM name.
+
+2. Update hosts managed by `vagrant-hostmanager`:
+
+    ```bash
+    vagrant hostmanager
+    ```
