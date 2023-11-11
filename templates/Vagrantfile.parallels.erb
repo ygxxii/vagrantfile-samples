@@ -32,6 +32,8 @@
 # Variables to set:
 #
 VM_NAME = "test-standalone"
+HOST_NAME = VM_NAME
+# HOST_NAME = "test-standalone"
 
 # Host Locale Environment Variables:
 #
@@ -146,7 +148,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # - Default: "default"
   # - Note: Do not change this after 'vagrant up' !
   #
-  config.vm.define "#{VM_NAME.downcase}"
+  config.vm.define VM_NAME
 
   # Hostname in VM:
   # used by VM, '[vagrant@hotname]'
@@ -154,7 +156,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # - Default: "nil" (Vagrant will not manage the hostname)
   # - Note: To change this option after VM is created, execute 'vagrant reload' is required.
   #
-  config.vm.hostname = "#{VM_NAME.downcase}"
+  config.vm.hostname = "#{HOST_NAME.downcase}"
 
   # VM OS Type:
   # Vagrant will auto-detect
@@ -212,7 +214,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # 
     # - Note: To change this option after VM is created, execute 'vagrant reload' is required.
     #
-    prl.name = "#{VM_NAME.downcase}"
+    prl.name = VM_NAME
     
     # Full Clone / Linked Clone:
     # 
@@ -236,7 +238,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     #     - 'true': Turn on Auto-Update
     # - Default: 'false'
     #
-    prl.update_guest_tools = true
+    prl.update_guest_tools = false
     
     # VM memory size:
     #
@@ -365,9 +367,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
 You can run following commands on the host:
 
-To SSH login to VM:                 'vagrant ssh #{VM_NAME.downcase}'
+To SSH login to VM by Vagrant:      'vagrant ssh #{VM_NAME}'
+To SSH login to VM by ssh:          'ssh vagrant@#{HOST_NAME} -i .vagrant/machines/#{HOST_NAME}/parallels/private_key'
 To check VM's status by Vagrant:    'vagrant status'
-To check VM's status by prlctl:     'prlctl list #{VM_NAME.downcase}'
+To check VM's status by prlctl:     'prlctl list #{VM_NAME}'
 To get all Vagrant sub-commands:    'vagrant list-commands'
 
 ------------------------------------------------------
