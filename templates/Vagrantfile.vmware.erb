@@ -85,7 +85,6 @@ ENV['VAGRANT_NO_PARALLEL'] = 'no'
 # Minimum Vagrant version:
 #
 # - Ref: [Minimum Vagrant Version - Vagrantfile | Vagrant | HashiCorp Developer](https://developer.hashicorp.com/vagrant/docs/vagrantfile/vagrant_version)
-# - Note: required by 'vagrant-parallels' plugin
 #
 Vagrant.require_version ">= 1.9.7"
 
@@ -296,7 +295,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Forwarded Ports:
   # 
   # - Ref: [Forwarded Ports - Networking | Vagrant | HashiCorp Developer](https://developer.hashicorp.com/vagrant/docs/networking/forwarded_ports)
-  # - Ref: [Public Networks - Networking - Vagrant Parallels Provider Documentation](http://parallels.github.io/vagrant-parallels/docs/networking/public_network.html)
   #
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine. In the example below,
@@ -317,7 +315,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # allows host-only access
   #
   # - Ref: [Private Networks - Networking | Vagrant | HashiCorp Developer](https://developer.hashicorp.com/vagrant/docs/networking/private_network)
-  # - Ref: [Private Networks - Networking - Vagrant Parallels Provider Documentation](http://parallels.github.io/vagrant-parallels/docs/networking/private_network.html)
   #
   # Create a private network, with a specific IP:
   #config.vm.network "private_network", ip: "192.168.33.10"
@@ -328,7 +325,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Public Networks:
   #
   # - Ref: [Public Networks - Networking | Vagrant | HashiCorp Developer](https://developer.hashicorp.com/vagrant/docs/networking/public_network)
-  # - Ref: [Public Networks - Networking - Vagrant Parallels Provider Documentation](http://parallels.github.io/vagrant-parallels/docs/networking/public_network.html)
   #
   # Create a public network, which generally matched to bridged network.
   # Bridged networks make the machine appear as another physical device on
@@ -363,7 +359,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 You can run following commands on the host:
 
 To SSH login to VM by Vagrant:      'vagrant ssh #{VM_NAME}'
-To SSH login to VM by ssh:          'ssh vagrant@#{HOST_NAME} -i .vagrant/machines/#{HOST_NAME}/parallels/private_key'
+To SSH login to VM by ssh:          'ssh vagrant@#{HOST_NAME} -i .vagrant/machines/#{HOST_NAME}/vmware_fusion/private_key'
+                                    'ssh vagrant@#{HOST_NAME} -i .vagrant/machines/#{HOST_NAME}/vmware_desktop/private_key'
 To check VM's status by Vagrant:    'vagrant status'
 To get all Vagrant sub-commands:    'vagrant list-commands'
 
