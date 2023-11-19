@@ -274,13 +274,25 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   #
   # - Ref:[Shell Scripts - Provisioning | Vagrant | HashiCorp Developer](https://developer.hashicorp.com/vagrant/docs/provisioning/shell)
   #
-  config.vm.provision "shell", inline: <<-'SHELL_SCRIPT'
-    echo " ====== Linux: Recording box generation date ====> "
-    date > /etc/vagrant_box_build_date
-    
-    # echo " ====== Linux: Set Timezone ====> "
-    # timedatectl set-timezone "Asia/Shanghai"
-  SHELL_SCRIPT
+  config.vm.provision "shell" do |shell|
+    shell.inline = <<-'SHELL_SCRIPT'
+      echo " ====== Linux: Recording box generation date ====> "
+      date > /etc/vagrant_box_build_date
+      
+      # echo " ====== Linux: Set Timezone ====> "
+      # timedatectl set-timezone "Asia/Shanghai"
+    SHELL_SCRIPT
+    shell.reboot = false
+    shell.args = ""
+  end # of shell
+
+  # Empty provisioning for re-triggering Vagrant Plugin "vagrant-proxyconf":
+  #
+  config.vm.provision "proxyconf", run: "never", type: "shell" do |shell|
+    shell.inline = ""
+    shell.reboot = false
+    shell.args = ""
+  end # of shell
 
   # Automatic box update checking:
   #

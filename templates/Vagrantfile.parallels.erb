@@ -281,13 +281,25 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   #
   # - Ref:[Shell Scripts - Provisioning | Vagrant | HashiCorp Developer](https://developer.hashicorp.com/vagrant/docs/provisioning/shell)
   #
-  config.vm.provision "shell", inline: <<-'SHELL_SCRIPT'
-    echo " ====== Linux: Recording box generation date ====> "
-    date > /etc/vagrant_box_build_date
-    
-    # echo " ====== Linux: Set Timezone ====> "
-    # timedatectl set-timezone "Asia/Shanghai"
-  SHELL_SCRIPT
+  config.vm.provision "shell" do |shell|
+    shell.inline = <<-'SHELL_SCRIPT'
+      echo " ====== Linux: Recording box generation date ====> "
+      date > /etc/vagrant_box_build_date
+      
+      # echo " ====== Linux: Set Timezone ====> "
+      # timedatectl set-timezone "Asia/Shanghai"
+    SHELL_SCRIPT
+    shell.reboot = false
+    shell.args = ""
+  end # of shell
+
+  # Empty provisioning for re-triggering Vagrant Plugin "vagrant-proxyconf":
+  #
+  config.vm.provision "proxyconf", run: "never", type: "shell" do |shell|
+    shell.inline = ""
+    shell.reboot = false
+    shell.args = ""
+  end # of shell
 
   # Automatic box update checking:
   #
@@ -372,6 +384,7 @@ To SSH login to VM by Vagrant:      'vagrant ssh #{VM_NAME}'
 To SSH login to VM by ssh:          'ssh vagrant@#{HOST_NAME} -i .vagrant/machines/#{HOST_NAME}/parallels/private_key'
 To check VM's status by Vagrant:    'vagrant status'
 To check VM's status by prlctl:     'prlctl list #{VM_NAME}'
+To re-trigger vagrant-proxyconf:    'vagrant provision --provision-with proxyconf'
 To get all Vagrant sub-commands:    'vagrant list-commands'
 
 ------------------------------------------------------

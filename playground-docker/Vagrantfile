@@ -274,44 +274,55 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   #
   # - Ref:[Shell Scripts - Provisioning | Vagrant | HashiCorp Developer](https://developer.hashicorp.com/vagrant/docs/provisioning/shell)
   #
-  config.vm.provision "shell", inline: <<-'SHELL_SCRIPT'
-    echo " ====== Linux: Recording box generation date ====> "
-    date > /etc/vagrant_box_build_date
-    
-    # echo " ====== Linux: Set Timezone ====> "
-    # timedatectl set-timezone "Asia/Shanghai"
+  config.vm.provision "shell" do |shell|
+    shell.inline = <<-'SHELL_SCRIPT'
+      echo " ====== Linux: Recording box generation date ====> "
+      date > /etc/vagrant_box_build_date
+      
+      # echo " ====== Linux: Set Timezone ====> "
+      # timedatectl set-timezone "Asia/Shanghai"
 
-    echo " ====== DNF: Install Docker REPO From Mirror ====> "
-    yum-config-manager --add-repo=https://download.docker.com/linux/centos/docker-ce.repo
-    
-    echo " ====== DNF: Import Docker REPO GPG Key ====> "
-    rpm --import https://download.docker.com/linux/centos/gpg
-    
-    echo " ====== DNF: Config Docker REPO Mirror ====> "
-    sed -e 's|^\(baseurl\s*=\s*\)https://download.docker.com|\1https://mirrors.tuna.tsinghua.edu.cn/docker-ce|g' \
-        -i.default \
-        /etc/yum.repos.d/docker-ce.repo
+      echo " ====== DNF: Install Docker REPO From Mirror ====> "
+      yum-config-manager --add-repo=https://download.docker.com/linux/centos/docker-ce.repo
+      
+      echo " ====== DNF: Import Docker REPO GPG Key ====> "
+      rpm --import https://download.docker.com/linux/centos/gpg
+      
+      echo " ====== DNF: Config Docker REPO Mirror ====> "
+      sed -e 's|^\(baseurl\s*=\s*\)https://download.docker.com|\1https://mirrors.tuna.tsinghua.edu.cn/docker-ce|g' \
+          -i.default \
+          /etc/yum.repos.d/docker-ce.repo
 
-    echo " ====== DNF: Install Docker & Docker Compose v2 ====> "
-    yum remove docker \
-                    docker-client \
-                    docker-client-latest \
-                    docker-common \
-                    docker-latest \
-                    docker-latest-logrotate \
-                    docker-logrotate \
-                    docker-engine
-    yum -y install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+      echo " ====== DNF: Install Docker & Docker Compose v2 ====> "
+      yum remove docker \
+                      docker-client \
+                      docker-client-latest \
+                      docker-common \
+                      docker-latest \
+                      docker-latest-logrotate \
+                      docker-logrotate \
+                      docker-engine
+      yum -y install docker-ce docker-ce-cli containerd.io docker-compose-plugin
 
-    echo " ====== systemd: Start docker.service ====> "
-    systemctl start docker
-    systemctl enable docker
-    systemctl status docker --no-pager -l
+      echo " ====== systemd: Start docker.service ====> "
+      systemctl start docker
+      systemctl enable docker
+      systemctl status docker --no-pager -l
 
-    echo " ====== Linux: Add user vagrant to group docker ====> "
-    usermod -aG docker vagrant
+      echo " ====== Linux: Add user vagrant to group docker ====> "
+      usermod -aG docker vagrant
+    SHELL_SCRIPT
+    shell.reboot = false
+    shell.args = ""
+  end # of shell
 
-  SHELL_SCRIPT
+  # Empty provisioning for re-triggering Vagrant Plugin "vagrant-proxyconf":
+  #
+  config.vm.provision "proxyconf", run: "never", type: "shell" do |shell|
+    shell.inline = ""
+    shell.reboot = false
+    shell.args = ""
+  end # of shell
 
   # Enable provisioning with Ansible Playbook:
   #
@@ -405,8 +416,8 @@ To SSH login to VM by Vagrant:      'vagrant ssh #{VM_NAME}'
 To SSH login to VM by ssh:          'ssh vagrant@#{HOST_NAME} -i .vagrant/machines/#{HOST_NAME}/parallels/private_key'
 To check VM's status by Vagrant:    'vagrant status'
 To check VM's status by prlctl:     'prlctl list #{VM_NAME}'
+To re-trigger vagrant-proxyconf:    'vagrant provision --provision-with proxyconf'
 To get all Vagrant sub-commands:    'vagrant list-commands'
-To rerun Ansible Playbooks:         'vagrant provision --provision-with ansible'
 
 ------------------------------------------------------
 MSG

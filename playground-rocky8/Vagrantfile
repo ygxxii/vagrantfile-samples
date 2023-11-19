@@ -274,49 +274,60 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   #
   # - Ref:[Shell Scripts - Provisioning | Vagrant | HashiCorp Developer](https://developer.hashicorp.com/vagrant/docs/provisioning/shell)
   #
-  config.vm.provision "shell", inline: <<-'SHELL_SCRIPT'
-    echo " ====== Linux: Recording box generation date ====> "
-    date > /etc/vagrant_box_build_date
-    
-    # echo " ====== Linux: Set Timezone ====> "
-    # timedatectl set-timezone "Asia/Shanghai"
+  config.vm.provision "shell" do |shell|
+    shell.inline = <<-'SHELL_SCRIPT'
+      echo " ====== Linux: Recording box generation date ====> "
+      date > /etc/vagrant_box_build_date
+      
+      # echo " ====== Linux: Set Timezone ====> "
+      # timedatectl set-timezone "Asia/Shanghai"
 
-    echo " ====== DNF: Enable Extras REPO (to install epel-release) ====> "
-    dnf config-manager --enable extras
+      echo " ====== DNF: Enable Extras REPO (to install epel-release) ====> "
+      dnf config-manager --enable extras
 
-    echo " ====== DNF: Config Rocky Linux 8 REPO mirror ====> "
-    sed -e 's|^\(mirrorlist\s*=\s*\)|#\1|g' \
-        -e 's|^#\s*\(baseurl\s*=\s*\)http://dl.rockylinux.org/\$contentdir|\1https://mirrors.ustc.edu.cn/rocky|g' \
-        -i.default \
-        /etc/yum.repos.d/Rocky-AppStream.repo \
-        /etc/yum.repos.d/Rocky-BaseOS.repo \
-        /etc/yum.repos.d/Rocky-Extras.repo \
-        /etc/yum.repos.d/Rocky-PowerTools.repo
-	  dnf --disablerepo=* --enablerepo=appstream,baseos,extras,powertools makecache
+      echo " ====== DNF: Config Rocky Linux 8 REPO mirror ====> "
+      sed -e 's|^\(mirrorlist\s*=\s*\)|#\1|g' \
+          -e 's|^#\s*\(baseurl\s*=\s*\)http://dl.rockylinux.org/\$contentdir|\1https://mirrors.ustc.edu.cn/rocky|g' \
+          -i.default \
+          /etc/yum.repos.d/Rocky-AppStream.repo \
+          /etc/yum.repos.d/Rocky-BaseOS.repo \
+          /etc/yum.repos.d/Rocky-Extras.repo \
+          /etc/yum.repos.d/Rocky-PowerTools.repo
+      dnf --disablerepo=* --enablerepo=appstream,baseos,extras,powertools makecache
 
-    echo " ====== YUM: Config EPEL REPO Mirror ====> "
-    sed -e 's|^metalink=|#metalink=|g' \
-        -e 's|^#baseurl=https\?://download.*/pub/epel/|baseurl=https://mirrors.tuna.tsinghua.edu.cn/epel/|g' \
-        -i.default \
-        /etc/yum.repos.d/epel.repo /etc/yum.repos.d/epel-testing.repo
-    dnf config-manager --set-disabled "epel-modular*"
-	  dnf config-manager --set-disabled "epel-testing-modular*"
-    dnf --disablerepo=* --enablerepo=epel makecache
+      echo " ====== YUM: Config EPEL REPO Mirror ====> "
+      sed -e 's|^metalink=|#metalink=|g' \
+          -e 's|^#baseurl=https\?://download.*/pub/epel/|baseurl=https://mirrors.tuna.tsinghua.edu.cn/epel/|g' \
+          -i.default \
+          /etc/yum.repos.d/epel.repo /etc/yum.repos.d/epel-testing.repo
+      dnf config-manager --set-disabled "epel-modular*"
+      dnf config-manager --set-disabled "epel-testing-modular*"
+      dnf --disablerepo=* --enablerepo=epel makecache
 
-    echo " ====== DNF: Install Packages ====> "
-    dnf -y install \
-    	net-tools `# netstat & ifconfig` \
-    	lrzsz `# rz & sz` \
-    	bash-completion `# Tab auto completion` \
-    	mlocate `# locate` \
-    	unzip \
-      dstat \
-      traceroute \
-      ethtool \
-      tree \
-      yum-utils
+      echo " ====== DNF: Install Packages ====> "
+      dnf -y install \
+        net-tools `# netstat & ifconfig` \
+        lrzsz `# rz & sz` \
+        bash-completion `# Tab auto completion` \
+        mlocate `# locate` \
+        unzip \
+        dstat \
+        traceroute \
+        ethtool \
+        tree \
+        yum-utils
+    SHELL_SCRIPT
+    shell.reboot = false
+    shell.args = ""
+  end # of shell
 
-  SHELL_SCRIPT
+  # Empty provisioning for re-triggering Vagrant Plugin "vagrant-proxyconf":
+  #
+  config.vm.provision "proxyconf", run: "never", type: "shell" do |shell|
+    shell.inline = ""
+    shell.reboot = false
+    shell.args = ""
+  end # of shell
 
   # Enable provisioning with Ansible Playbook:
   #
@@ -410,8 +421,8 @@ To SSH login to VM by Vagrant:      'vagrant ssh #{VM_NAME}'
 To SSH login to VM by ssh:          'ssh vagrant@#{HOST_NAME} -i .vagrant/machines/#{HOST_NAME}/parallels/private_key'
 To check VM's status by Vagrant:    'vagrant status'
 To check VM's status by prlctl:     'prlctl list #{VM_NAME}'
+To re-trigger vagrant-proxyconf:    'vagrant provision --provision-with proxyconf'
 To get all Vagrant sub-commands:    'vagrant list-commands'
-To rerun Ansible Playbooks:         'vagrant provision --provision-with ansible'
 
 ------------------------------------------------------
 MSG
