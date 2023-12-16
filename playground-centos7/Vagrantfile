@@ -43,7 +43,7 @@ HOST_NAME = VM_NAME
 #
 # To override host locale environment variables:
 ENV["LC_ALL"] = "en_US.UTF-8"
-
+ENV["LC_CTYPE"] = "en_US.UTF-8"
 
 # Vagrant Environment Variables:
 #
