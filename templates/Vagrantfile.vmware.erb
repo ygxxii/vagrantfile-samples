@@ -190,6 +190,18 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   #
   config.vm.communicator = "ssh"
 
+  # Replace Vagrant's default insecure SSH key:
+  #
+  # - Ref: [config.ssh - Vagrantfile | Vagrant | HashiCorp Developer](https://developer.hashicorp.com/vagrant/docs/vagrantfile/ssh_settings)
+  # - Vaule:
+  #     - "true": Generate a new SSH keypair, and insert into the VM. This will replace Vagrant's default insecure key inside the VM.
+  #               New key: ".vagrant/machines/#{HOST_NAME}/parallels/private_key"
+  #     - "false": Do not replace. Still use Vagrant's default insecure key.
+  #                Old key: "~/.vagrant.d/insecure_private_key"
+  # - Default" "true"
+  #
+  #config.ssh.insert_key = false
+
   # Disable the default Vagrant synced folder "/vagrant". Comment to enable:
   #
   # - Ref: [Basic Usage - Synced Folders | Vagrant | HashiCorp Developer](https://developer.hashicorp.com/vagrant/docs/synced-folders/basic_usage)

@@ -44,6 +44,7 @@ HOST_NAME = VM_NAME
 #
 # To override host locale environment variables:
 ENV["LC_ALL"] = "en_US.UTF-8"
+ENV["LC_CTYPE"] = "en_US.UTF-8"
 
 
 # Vagrant Environment Variables:
@@ -183,6 +184,18 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # - Default: "ssh"
   #
   config.vm.communicator = "ssh"
+
+  # Replace Vagrant's default insecure SSH key:
+  #
+  # - Ref: [config.ssh - Vagrantfile | Vagrant | HashiCorp Developer](https://developer.hashicorp.com/vagrant/docs/vagrantfile/ssh_settings)
+  # - Vaule:
+  #     - "true": Generate a new SSH keypair, and insert into the VM. This will replace Vagrant's default insecure key inside the VM.
+  #               New key: ".vagrant/machines/#{HOST_NAME}/parallels/private_key"
+  #     - "false": Do not replace. Still use Vagrant's default insecure key.
+  #                Old key: "~/.vagrant.d/insecure_private_key"
+  # - Default" "true"
+  #
+  #config.ssh.insert_key = false
 
   # Disable the default Vagrant synced folder "/vagrant". Comment to enable:
   #
