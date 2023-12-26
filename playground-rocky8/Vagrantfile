@@ -105,9 +105,21 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   ###   config.proxy.http     = "http://<proxy-server>:<proxy-port>"
   ###   config.proxy.https    = "http://<proxy-server>:<proxy-port>"
   ###   config.proxy.no_proxy = "localhost,127.0.0.1"
-  ###   # config.proxy.enabled = { yum: false }
+  ###   config.proxy.enabled = { pear: false, yum: false, docker: false }
   ### end
-  
+  #
+  #
+  # Or :
+  ### Disable plugin 'vagrant-proxyconf' completely:
+  ###
+  ### if Vagrant.has_plugin?("vagrant-proxyconf")
+  ###   config.proxy.enabled = false
+  ### end
+  #
+  if Vagrant.has_plugin?("vagrant-proxyconf")
+    config.proxy.enabled  = { pear: false, npm: false }
+  end
+
   # Settings for 'vagrant-hostmanager' plugin:
   #
   # - Ref: [devopsgroup-io/vagrant-hostmanager](https://github.com/devopsgroup-io/vagrant-hostmanager)
@@ -431,6 +443,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 You can run following commands on the host:
 
 To SSH login to VM by Vagrant:      'vagrant ssh #{VM_NAME}'
+                            or      'vagrant ssh'
 To SSH login to VM by ssh:          'ssh vagrant@#{HOST_NAME} -i .vagrant/machines/#{HOST_NAME}/parallels/private_key'
 To check VM's status by Vagrant:    'vagrant status'
 To check VM's status by prlctl:     'prlctl list #{VM_NAME}'

@@ -44,6 +44,7 @@ HOST_NAME = VM_NAME
 #
 # To override host locale environment variables:
 ENV["LC_ALL"] = "en_US.UTF-8"
+ENV["LC_CTYPE"] = "en_US.UTF-8"
 
 
 # Vagrant Environment Variables:
@@ -104,8 +105,20 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   ###   config.proxy.http     = "http://<proxy-server>:<proxy-port>"
   ###   config.proxy.https    = "http://<proxy-server>:<proxy-port>"
   ###   config.proxy.no_proxy = "localhost,127.0.0.1"
-  ###   # config.proxy.enabled = { yum: false }
+  ###   config.proxy.enabled = { pear: false, yum: false, docker: false }
   ### end
+  #
+  #
+  # Or :
+  ### Disable plugin 'vagrant-proxyconf' completely:
+  ###
+  ### if Vagrant.has_plugin?("vagrant-proxyconf")
+  ###   config.proxy.enabled = false
+  ### end
+  #
+  if Vagrant.has_plugin?("vagrant-proxyconf")
+    config.proxy.enabled  = { pear: false, npm: false }
+  end
   
   # Settings for 'vagrant-hostmanager' plugin:
   #
@@ -113,7 +126,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   #
   if Vagrant.has_plugin?("vagrant-hostmanager")
     config.hostmanager.enabled = true
-    # config.hostmanager.manage_host = true
+    config.hostmanager.manage_host = true
     config.hostmanager.manage_guest = true
     config.hostmanager.ignore_private_ip = false
     config.hostmanager.include_offline = true
@@ -183,6 +196,18 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # - Default: "ssh"
   #
   config.vm.communicator = "ssh"
+
+  # Replace Vagrant's default insecure SSH key:
+  #
+  # - Ref: [config.ssh - Vagrantfile | Vagrant | HashiCorp Developer](https://developer.hashicorp.com/vagrant/docs/vagrantfile/ssh_settings)
+  # - Vaule:
+  #     - "true": Generate a new SSH keypair, and insert into the VM. This will replace Vagrant's default insecure key inside the VM.
+  #               New key: ".vagrant/machines/#{HOST_NAME}/parallels/private_key"
+  #     - "false": Do not replace. Still use Vagrant's default insecure key.
+  #                Old key: "~/.vagrant.d/insecure_private_key"
+  # - Default" "true"
+  #
+  config.ssh.insert_key = false
 
   # Disable the default Vagrant synced folder "/vagrant". Comment to enable:
   #
@@ -384,11 +409,14 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 You can run following commands on the host:
 
 To SSH login to VM by Vagrant:      'vagrant ssh #{VM_NAME}'
-To SSH login to VM by ssh:          'ssh vagrant@#{HOST_NAME} -i .vagrant/machines/#{HOST_NAME}/parallels/private_key'
+                            or      'vagrant ssh'
+To SSH login to VM by ssh:          'ssh vagrant@#{HOST_NAME} -i ~/.vagrant.d/insecure_private_key'
 To check VM's status by Vagrant:    'vagrant status'
 To check VM's status by prlctl:     'prlctl list #{VM_NAME}'
 To re-trigger vagrant-proxyconf:    'vagrant provision --provision-with proxyconf'
 To run / re-run Ansible Playbooks:  'vagrant provision --provision-with ansible'
+                                or  'ansible-playbook playbook.yml'
+To run Ansible ad-hoc commands:     'ansible all -m ping'
 To get all Vagrant sub-commands:    'vagrant list-commands'
 
 ------------------------------------------------------
