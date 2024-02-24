@@ -1,0 +1,11 @@
+---
+- name: Grafana Installation
+  hosts: all
+  become: true
+
+  roles:
+    - role: grafana.grafana.grafana
+      vars:
+        grafana_security:
+          admin_user: "admin"
+          admin_password: "admin"
