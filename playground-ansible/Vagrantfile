@@ -308,7 +308,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       # timedatectl set-timezone "Asia/Shanghai"
     SHELL_SCRIPT
     shell.reboot = false
-    shell.args = ""
+    shell.args   = ""
   end # of shell
 
   # Empty provisioning for re-triggering Vagrant Plugin "vagrant-proxyconf":
@@ -316,7 +316,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provision "proxyconf", run: "never", type: "shell" do |shell|
     shell.inline = ""
     shell.reboot = false
-    shell.args = ""
+    shell.args   = ""
   end # of shell
 
   # Enable provisioning with Ansible Playbook:
@@ -326,7 +326,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   #
   config.vm.provision "ansible", run: "never", type: "ansible" do |ansible|
     ansible.playbook           = "playbook.yml"
+    # ansible.inventory_path     = "hosts.yml"
     ansible.compatibility_mode = "2.0"
+    # ansible.raw_arguments      = ["-vvv"]
   end
 
   # Automatic box update checking:
@@ -410,7 +412,9 @@ You can run following commands on the host:
 
 To SSH login to VM by Vagrant:      'vagrant ssh #{VM_NAME}'
                             or      'vagrant ssh'
-To SSH login to VM by ssh:          'ssh vagrant@#{HOST_NAME} -i ~/.vagrant.d/insecure_private_key'
+To SSH login to VM by ssh:
+  - config.ssh.insert_key = false : 'ssh vagrant@#{HOST_NAME} -i ~/.vagrant.d/insecure_private_key'
+  - config.ssh.insert_key = true :  'ssh vagrant@#{HOST_NAME} -i .vagrant/machines/#{HOST_NAME}/parallels/private_key'
 To check VM's status by Vagrant:    'vagrant status'
 To check VM's status by prlctl:     'prlctl list #{VM_NAME}'
 To re-trigger vagrant-proxyconf:    'vagrant provision --provision-with proxyconf'

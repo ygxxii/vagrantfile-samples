@@ -31,9 +31,9 @@
 
 # Variables to set:
 #
-VM_NAME = "playground-docker-rocky8"
+VM_NAME = "playground-docker"
 HOST_NAME = VM_NAME
-# HOST_NAME = "playground-docker-rocky8"
+# HOST_NAME = "playground-docker"
 
 
 # Host Locale Environment Variables:
@@ -293,6 +293,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     prl.customize "pre-boot", ["set", :id, "--sync-host-printers", "off"]
     prl.customize "pre-boot", ["set", :id, "--sync-default-printer", "off"]
     
+    # Automatically start on boot:
+    #
+    prl.customize ["set", :id, "--onboot", "yes"]
+
   end # of prl
 
   # Enable provisioning with a shell script:
@@ -439,7 +443,9 @@ You can run following commands on the host:
 
 To SSH login to VM by Vagrant:      'vagrant ssh #{VM_NAME}'
                             or      'vagrant ssh'
-To SSH login to VM by ssh:          'ssh vagrant@#{HOST_NAME} -i .vagrant/machines/#{HOST_NAME}/parallels/private_key'
+To SSH login to VM by ssh:
+  - config.ssh.insert_key = false : 'ssh vagrant@#{HOST_NAME} -i ~/.vagrant.d/insecure_private_key'
+  - config.ssh.insert_key = true :  'ssh vagrant@#{HOST_NAME} -i .vagrant/machines/#{HOST_NAME}/parallels/private_key'
 To check VM's status by Vagrant:    'vagrant status'
 To check VM's status by prlctl:     'prlctl list #{VM_NAME}'
 To re-trigger vagrant-proxyconf:    'vagrant provision --provision-with proxyconf'
