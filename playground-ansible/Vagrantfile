@@ -1,11 +1,24 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-# Meant for Parallels Desktop Pro / Business edition
+# Meant for:
+# - Parallels Desktop Pro edition
+# - Parallels Desktop Business edition
+# - VMware Workstation
+# - VMware Fusion
+
+REQUIRED_PLUGINS = %w( vagrant-proxyconf vagrant-hostmanager )
+REQUIRED_PLUGINS.all? do |plugin|
+  Vagrant.has_plugin?(plugin) || (
+    puts "The #{plugin} plugin is required. Please install it with:"
+    puts "$ vagrant plugin install #{plugin}"
+    false
+  )
+end
 
 # Print error information and exit:
 #
-# - Ref: [javiroman/TestBeds: Vagrant projects for testing technologies (testbed environments)](https://github.com/javiroman/TestBeds)
+# - Ref: [javiroman/TestBeds](https://github.com/javiroman/TestBeds)
 # - Souce code: [vagrant/lib/vagrant/errors.rb at main · hashicorp/vagrant · GitHub](https://github.com/hashicorp/vagrant/blob/main/lib/vagrant/errors.rb)
 #
 #def fail_with_message(msg)
@@ -18,7 +31,7 @@
 
 # Print information:
 #
-# - Ref: [oracle/vagrant-projects: Vagrant projects for Oracle products and other examples](https://github.com/oracle/vagrant-projects)
+# - Ref: [oracle/vagrant-projects](https://github.com/oracle/vagrant-projects)
 # - Souce code: [vagrant/lib/vagrant/ui.rb at main · hashicorp/vagrant · GitHub](https://github.com/hashicorp/vagrant/blob/main/lib/vagrant/ui.rb)
 #
 #ui = Vagrant::UI::Prefixed.new(Vagrant::UI::Colored.new, "vagrant")
@@ -31,9 +44,16 @@
 
 # Variables to set:
 #
-VM_NAME = "playground-ansible-rocky8"
+## Vagrant Box's Name:
+BOX_NAME  = "bento/rockylinux-8"
+## VM's Name used by Vagrant:
+VM_NAME   = "playground-ansible-rocky8"
+## VM's Hostname:
 HOST_NAME = VM_NAME
-# HOST_NAME = "playground-ansible-rocky8"
+## VM's CPU count:
+NODE_CPU  = "2"
+## VM's memory (MiB):
+NODE_MEM  = "4096"
 
 
 # Host Locale Environment Variables:
@@ -45,7 +65,6 @@ HOST_NAME = VM_NAME
 # To override host locale environment variables:
 ENV["LC_ALL"] = "en_US.UTF-8"
 ENV["LC_CTYPE"] = "en_US.UTF-8"
-
 
 # Vagrant Environment Variables:
 #
@@ -87,15 +106,6 @@ Vagrant.require_version ">= 1.9.7"
 VAGRANTFILE_API_VERSION = "2" if not defined? VAGRANTFILE_API_VERSION
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-
-  # Install Vagrant Plugins:
-  #
-  # - Ref: [config.vagrant - Vagrantfile | Vagrant | HashiCorp Developer](https://developer.hashicorp.com/vagrant/docs/vagrantfile/vagrant_settings)
-  # - Sample:
-  ### config.vagrant.plugins = "vagrant-plugin"
-  ### config.vagrant.plugins = ["vagrant-plugin", "vagrant-other-plugin"]
-  #
-  config.vagrant.plugins = ["vagrant-parallels", "vagrant-proxyconf", "vagrant-hostmanager"]
   
   # Settings for 'vagrant-proxyconf' plugin:
   #
@@ -136,7 +146,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   #
   # - Ref: [Install and Specify a Box | Vagrant | HashiCorp Developer](https://developer.hashicorp.com/vagrant/tutorials/getting-started/getting-started-boxes)
   #
-  config.vm.box = "bento/rockylinux-8"
+  config.vm.box = BOX_NAME
   
   # Vagrant Box version:
   #
@@ -172,14 +182,14 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   #     - ':linux'
   #     - ':windows'
   # - Default: ':linux'
-  # - Note: Do not set this option when using VMware Workstation. Or error may occur:
+  # - Note: Do not set this option when using VMware Workstation / Fusion. Or error may occur:
   #     "Vagrant attempted to execute the capability 'configure_networks'
   #     on the detect guest OS 'linux', but the guest doesn't
   #     support that capability. This capability is required for your
   #     configuration of Vagrant. Please either reconfigure Vagrant to
   #     avoid this capability or fix the issue by creating the capability."
   #
-  config.vm.guest = :linux
+  # config.vm.guest = :linux
 
   # How long Vagrant will keep trying to connect to the VM before it assume something went wrong and times out:
   #
@@ -221,12 +231,83 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   #
   #config.vm.synced_folder "src/", "/srv/website"
 
+  # VMware Desktop Provider:
+  #
+  # - Ref: [Configuration - VMware Provider | Vagrant | HashiCorp Developer](https://developer.hashicorp.com/vagrant/docs/providers/vmware/configuration)
+  #
+  config.vm.provider "vmware_desktop" do |v|
+
+    # Display name of VM:
+    # used by VMware workstation / Fusion
+    # formerly: "v.displayname"
+    #
+    v.vmx["displayName"] = VM_NAME
+
+    # Full Clone / Linked Clone:
+    # 
+    # - Value:
+    #     - 'false': Full Clone. 
+    #         - Pro: Full image copy. Totally independent from the box.
+    #         - Con: Slower when 'vagrant up'. Use more disk space.
+    #     - 'true': Linked Clone. 
+    #         - Pro: Faster when 'vagrant up'. Use less disk space.
+    #         - Con: The box deletion will make all its linked clones not working.
+    # - Default: 'true' (Recommended)
+    # - Note: Changes of this setting will take an effect only for newly created machines.
+    #
+    v.linked_clone = true
+
+    # Launch guest with the GUI:
+    #
+    # - Default: false
+    # - Note: Set to 'false' is not recommended. It will cause VMware Workstation/ Fusion can not get the new VM's infomation.
+    #
+    #v.gui = true
+
+    # Time to pause after applying port forwarding configuration:
+    # This allows guest time to acquire DHCP address if previous address is dropped when VMware network services are restarted.
+    #
+    # - Unit: seconds
+    #
+    v.port_forward_network_pause = 8
+
+    # Allow list VMX settings:
+    #
+    v.allowlist_verified = true
+
+    # VM memory size:
+    #
+    # - Unit: MiB
+    #
+    v.vmx["memsize"] = NODE_MEM
+
+    # VM number of CPUs:
+    #
+    v.vmx["numvcpus"] = NODE_CPU
+
+    # VM number of CPU cores per socket:
+    #
+    # Note: 'numvcpus' must be divisible by 'cpuid.coresPerSocket'
+    #
+    #v.vmx["cpuid.coresPerSocket"] = "1"
+
+    # Enable nested virtualization:
+    #
+    v.vmx["vhv.enable"] = "false"
+
+    # Use paravirtualized virtual hardware:
+    #
+    #v.vmx['ethernet0.virtualDev'] = 'vmxnet3'
+
+  end # of v
+
+
   # Parallels Desktop Provider:
   #
   # - Ref: [Configuration - Vagrant Parallels Provider Documentation](http://parallels.github.io/vagrant-parallels/docs/configuration.html)
   #
   config.vm.provider "parallels" do |prl|
-  
+
     # Display name of VM:
     # used by Parallels Desktop
     # By default, Vagrant sets it to the name of the folder containing the Vagrantfile plus a timestamp of when the machine was created.
@@ -234,7 +315,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # - Note: To change this option after VM is created, execute 'vagrant reload' is required.
     #
     prl.name = VM_NAME
-    
+
     # Full Clone / Linked Clone:
     # 
     # - Value:
@@ -249,7 +330,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # - Requirements: vagrant-parallels > v2.0.0
     #
     prl.linked_clone = true
-    
+
     # Parallels Tools Auto-Update:
     #
     # - Value:
@@ -258,17 +339,17 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # - Default: 'false'
     #
     prl.update_guest_tools = false
-    
+
     # VM memory size:
     #
     # - Unit: MiB
     #
-    prl.memory = 4096
+    prl.memory = NODE_MEM
 
     # VM number of CPUs:
     #
-    prl.cpus = 2
-    
+    prl.cpus = NODE_CPU
+
     # Customization with prlctl:
     # 'prl.customize' use 'prlctl' to modify the VM's settings.
     # 
@@ -286,14 +367,15 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     #
     # - Ref: [Please enable `prl.gui = true` for parity with Virtualbox and VMware providers · Issue #355 · Parallels/vagrant-parallels](https://github.com/Parallels/vagrant-parallels/issues/355)
     #
-    prl.customize ["set", :id, "--startup-view", "window"]
+    # prl.customize ["set", :id, "--startup-view", "window"]
 
     # Stop sharing printers:
     #
     prl.customize "pre-boot", ["set", :id, "--sync-host-printers", "off"]
     prl.customize "pre-boot", ["set", :id, "--sync-default-printer", "off"]
-    
+
   end # of prl
+
 
   # Enable provisioning with a shell script:
   #
@@ -303,20 +385,21 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     shell.inline = <<-'SHELL_SCRIPT'
       echo " ====== Linux: Recording box generation date ====> "
       date > /etc/vagrant_box_build_date
-      
-      # echo " ====== Linux: Set Timezone ====> "
-      # timedatectl set-timezone "Asia/Shanghai"
+
+      echo " ====== Linux: Set Timezone ====> "
+      timedatectl set-timezone "Asia/Shanghai"
     SHELL_SCRIPT
     shell.reboot = false
-    shell.args   = ""
+    shell.args = ""
   end # of shell
+
 
   # Empty provisioning for re-triggering Vagrant Plugin "vagrant-proxyconf":
   #
   config.vm.provision "proxyconf", run: "never", type: "shell" do |shell|
     shell.inline = ""
     shell.reboot = false
-    shell.args   = ""
+    shell.args = ""
   end # of shell
 
   # Enable provisioning with Ansible Playbook:
@@ -341,7 +424,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   #
   config.vm.box_check_update = true
 
-  # Forwarded Ports:
+  # Forwarded ports:
   # 
   # - Ref: [Forwarded Ports - Networking | Vagrant | HashiCorp Developer](https://developer.hashicorp.com/vagrant/docs/networking/forwarded_ports)
   # - Ref: [Public Networks - Networking - Vagrant Parallels Provider Documentation](http://parallels.github.io/vagrant-parallels/docs/networking/public_network.html)
@@ -414,7 +497,9 @@ To SSH login to VM by Vagrant:      'vagrant ssh #{VM_NAME}'
                             or      'vagrant ssh'
 To SSH login to VM by ssh:
   - config.ssh.insert_key = false : 'ssh vagrant@#{HOST_NAME} -i ~/.vagrant.d/insecure_private_key'
-  - config.ssh.insert_key = true :  'ssh vagrant@#{HOST_NAME} -i .vagrant/machines/#{HOST_NAME}/parallels/private_key'
+  - config.ssh.insert_key = true :
+      - Parallels Desktop:          'ssh vagrant@#{HOST_NAME} -i .vagrant/machines/#{HOST_NAME}/parallels/private_key'
+      - VMware Workstation/Fusion:  'ssh vagrant@#{HOST_NAME} -i .vagrant/machines/#{HOST_NAME}/vmware_desktop/private_key'
 To check VM's status by Vagrant:    'vagrant status'
 To check VM's status by prlctl:     'prlctl list #{VM_NAME}'
 To re-trigger vagrant-proxyconf:    'vagrant provision --provision-with proxyconf'
