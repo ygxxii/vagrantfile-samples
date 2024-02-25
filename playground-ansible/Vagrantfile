@@ -66,6 +66,7 @@ NODE_MEM  = "4096"
 ENV["LC_ALL"] = "en_US.UTF-8"
 ENV["LC_CTYPE"] = "en_US.UTF-8"
 
+
 # Vagrant Environment Variables:
 #
 # - Ref: [Environmental Variables | Vagrant | HashiCorp Developer](https://developer.hashicorp.com/vagrant/docs/other/environmental-variables)
@@ -129,7 +130,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   if Vagrant.has_plugin?("vagrant-proxyconf")
     config.proxy.enabled  = { pear: false, npm: false }
   end
-  
+
   # Settings for 'vagrant-hostmanager' plugin:
   #
   # - Ref: [devopsgroup-io/vagrant-hostmanager](https://github.com/devopsgroup-io/vagrant-hostmanager)
@@ -367,7 +368,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     #
     # - Ref: [Please enable `prl.gui = true` for parity with Virtualbox and VMware providers · Issue #355 · Parallels/vagrant-parallels](https://github.com/Parallels/vagrant-parallels/issues/355)
     #
-    # prl.customize ["set", :id, "--startup-view", "window"]
+    #prl.customize ["set", :id, "--startup-view", "window"]
 
     # Stop sharing printers:
     #
@@ -390,7 +391,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       timedatectl set-timezone "Asia/Shanghai"
     SHELL_SCRIPT
     shell.reboot = false
-    shell.args = ""
+    shell.args   = ""
   end # of shell
 
 
@@ -399,7 +400,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provision "proxyconf", run: "never", type: "shell" do |shell|
     shell.inline = ""
     shell.reboot = false
-    shell.args = ""
+    shell.args   = ""
   end # of shell
 
   # Enable provisioning with Ansible Playbook:
