@@ -66,6 +66,7 @@ NODE_MEM  = "4096"
 ENV["LC_ALL"] = "en_US.UTF-8"
 ENV["LC_CTYPE"] = "en_US.UTF-8"
 
+
 # Vagrant Environment Variables:
 #
 # - Ref: [Environmental Variables | Vagrant | HashiCorp Developer](https://developer.hashicorp.com/vagrant/docs/other/environmental-variables)
@@ -129,7 +130,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   if Vagrant.has_plugin?("vagrant-proxyconf")
     config.proxy.enabled  = { pear: false, npm: false }
   end
-  
+
   # Settings for 'vagrant-hostmanager' plugin:
   #
   # - Ref: [devopsgroup-io/vagrant-hostmanager](https://github.com/devopsgroup-io/vagrant-hostmanager)
@@ -385,7 +386,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     shell.inline = <<-'SHELL_SCRIPT'
       echo " ====== Linux: Recording box generation date ====> "
       date > /etc/vagrant_box_build_date
-      
+
       echo " ====== Linux: Set Timezone ====> "
       timedatectl set-timezone "Asia/Shanghai"
     
@@ -435,7 +436,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provision "proxyconf", run: "never", type: "shell" do |shell|
     shell.inline = ""
     shell.reboot = false
-    shell.args = ""
+    shell.args   = ""
   end # of shell
 
   # Enable provisioning with Ansible Playbook:
