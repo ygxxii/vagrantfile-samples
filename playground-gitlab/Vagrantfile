@@ -375,6 +375,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     prl.customize "pre-boot", ["set", :id, "--sync-host-printers", "off"]
     prl.customize "pre-boot", ["set", :id, "--sync-default-printer", "off"]
 
+    # Automatically start on boot:
+    #
+    prl.customize ["set", :id, "--onboot", "yes"]
+
   end # of prl
 
 
