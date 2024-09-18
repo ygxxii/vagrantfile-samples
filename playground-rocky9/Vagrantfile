@@ -45,8 +45,8 @@ end
 # Variables to set:
 #
 ## Vagrant Box's Name:
-# BOX_NAME  = "bento/rockylinux-9"
-BOX_NAME  = "rockylinux/9"
+BOX_NAME  = "bento/rockylinux-9"      # (in parallels Provider)
+# BOX_NAME  = "rockylinux/9"            # (in vmware_desktop Provider)
 ## VM's Name used by Vagrant:
 VM_NAME   = "playground-rocky9"
 ## VM's Hostname:
@@ -236,13 +236,30 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   #
   # - Ref: [Configuration - VMware Provider | Vagrant | HashiCorp Developer](https://developer.hashicorp.com/vagrant/docs/providers/vmware/configuration)
   #
-  config.vm.provider "vmware_desktop" do |v|
+  config.vm.provider "vmware_desktop" do |v, override|
 
     # Display name of VM:
     # used by VMware workstation / Fusion
     # formerly: "v.displayname"
     #
     v.vmx["displayName"] = VM_NAME
+
+    # Vagrant Box:
+    #
+    # - Ref: [Install and Specify a Box | Vagrant | HashiCorp Developer](https://developer.hashicorp.com/vagrant/tutorials/getting-started/getting-started-boxes)
+    #
+    override.vm.box = "rockylinux/9"
+
+    # Vagrant Box version:
+    #
+    # - Ref: [Box Versioning | Vagrant | HashiCorp Developer](https://developer.hashicorp.com/vagrant/docs/boxes/versioning)
+    # - Default: ">= 0" (latest)
+    #
+    override.vm.box_version = ""
+
+    # URL of Vagrant Box to download:
+    # Rocky Linux Offical: "https://dl.rockylinux.org/pub/rocky/9/images/x86_64/Rocky-9-Vagrant-VMware.latest.x86_64.box"
+    override.vm.box_url = "https://mirrors.aliyun.com/rockylinux/9/images/x86_64/Rocky-9-Vagrant-VMware.latest.x86_64.box"
 
     # Full Clone / Linked Clone:
     # 
