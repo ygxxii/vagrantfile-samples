@@ -1,0 +1,22 @@
+---
+- name: Jenkins Installation
+  hosts: all
+  become: true
+
+  tasks:
+    - name: "Setup Eclipse Temurin Repo"
+      ansible.builtin.yum_repository:
+        name: "Adoptium"
+        description: "Adoptium Eclipse Temurin Repo"
+        enabled: true
+        file: "adoptium"
+        baseurl: "https://packages.adoptium.net/artifactory/rpm/rocky/$releasever/$basearch"
+        gpgcheck: true
+        gpgkey: https://packages.adoptium.net/artifactory/api/gpg/key/public
+    - name: "Install Temurin JDK 11"
+      ansible.builtin.package:
+        name: temurin-11-jdk
+        state: present
+  roles:
+    - role: geerlingguy.jenkins
+    
