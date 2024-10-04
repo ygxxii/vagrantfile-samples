@@ -204,7 +204,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   #               New key: ".vagrant/machines/#{HOST_NAME}/parallels/private_key"
   #     - "false": Do not replace. Still use Vagrant's default insecure key.
   #                Old key: "~/.vagrant.d/insecure_private_key"
-  # - Default" "true"
+  # - Default: "true"
   #
   #config.ssh.insert_key = false
 
@@ -358,7 +358,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   #config.vm.network "forwarded_port", guest: 80, host: 8080, host_ip: "127.0.0.1"
 
   # Private Networks:
-  # allows host-only access
+  # Create a new Host-Only Network adapter.
   #
   # - Ref: [Private Networks - Networking | Vagrant | HashiCorp Developer](https://developer.hashicorp.com/vagrant/docs/networking/private_network)
   # - Ref: [Private Networks - Networking - Vagrant Parallels Provider Documentation](http://parallels.github.io/vagrant-parallels/docs/networking/private_network.html)
@@ -370,14 +370,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   #config.vm.network "private_network", type: "dhcp"
 
   # Public Networks:
+  # Create a new Bridged Network adapter. Bridged networks make the machine appear as another physical device on your network.
   #
   # - Ref: [Public Networks - Networking | Vagrant | HashiCorp Developer](https://developer.hashicorp.com/vagrant/docs/networking/public_network)
   # - Ref: [Public Networks - Networking - Vagrant Parallels Provider Documentation](http://parallels.github.io/vagrant-parallels/docs/networking/public_network.html)
   #
-  # Create a public network, which generally matched to bridged network.
-  # Bridged networks make the machine appear as another physical device on
-  # your network.
-  #
+  # Create a public network:
   #config.vm.network "public_network"
 
   # SSH private key to login to VM:

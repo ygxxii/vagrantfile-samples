@@ -215,7 +215,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   #               New key: ".vagrant/machines/#{HOST_NAME}/parallels/private_key"
   #     - "false": Do not replace. Still use Vagrant's default insecure key.
   #                Old key: "~/.vagrant.d/insecure_private_key"
-  # - Default" "true"
+  # - Default: "true"
   #
   #config.ssh.insert_key = false
 
@@ -287,7 +287,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     # VM number of CPU cores per socket:
     #
-    # Note: 'numvcpus' must be divisible by 'cpuid.coresPerSocket'
+    # - Note: 'numvcpus' must be divisible by 'cpuid.coresPerSocket'
     #
     # v.vmx["cpuid.coresPerSocket"] = "1"
 
@@ -297,7 +297,34 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     # Use paravirtualized virtual hardware:
     #
-    #v.vmx['ethernet0.virtualDev'] = 'vmxnet3'
+    #v.vmx["ethernet0.virtualDev"] = "vmxnet3"
+
+    # eth0(ethernet0)'s networking mode is always NAT in Vagrant. You can change it to other mode:
+    #
+    # - Ref: [Networking | Vagrant | HashiCorp Developer](https://developer.hashicorp.com/vagrant/docs/networking#there-is-a-nat-available)
+    # - Ref: [Vagrant Box - eth0 NAT · Issue #2093 · hashicorp/vagrant](https://github.com/hashicorp/vagrant/issues/2093)
+    # - Value:
+    #     - "nat": NAT mode
+    #     - "hostonly": Host-Only mode
+    #     - "bridged": Bridged mode
+    # - Default: "nat"
+    # - Note: This may lead to inconsistent behavior.
+    #
+    # Change to Host-Only mode:
+    #v.vmx["ethernet0.connectiontype"] = "hostonly"
+
+    # Enable Promiscuous Mode:
+    #
+    # - Ref: [networking - Configuring Promiscuous Mode in VMware Workstation running on Windows 10 serving two Linux guests - Super User](https://superuser.com/questions/1139028/configuring-promiscuous-mode-in-vmware-workstation-running-on-windows-10-serving)
+    # - Value:
+    #     - "TRUE": Disable Promiscuous Mode
+    #     - "FALSE": Enable Promiscuous Mode
+    # - Default: "TRUE" (recommended)
+    # - Note: When promiscuous mode is enabled for a network adapter, all virtual machines connected to
+    #     the network adapter have the potential of reading all packets across that network, 
+    #     meaning only the virtual machines connected to that network adapter.
+    #
+    #v.vmx["ethernet%d.noPromisc"] = "FALSE"    # replace %d with the ethernet number
 
   end # of v
 
@@ -476,7 +503,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   #config.vm.network "forwarded_port", guest: 80, host: 8080, host_ip: "127.0.0.1"
 
   # Private Networks:
-  # allows host-only access
+  # Create a new Host-Only Network adapter.
   #
   # - Ref: [Private Networks - Networking | Vagrant | HashiCorp Developer](https://developer.hashicorp.com/vagrant/docs/networking/private_network)
   # - Ref: [Private Networks - Networking - Vagrant Parallels Provider Documentation](http://parallels.github.io/vagrant-parallels/docs/networking/private_network.html)
@@ -488,14 +515,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   #config.vm.network "private_network", type: "dhcp"
 
   # Public Networks:
+  # Create a new Bridged Network adapter. Bridged networks make the machine appear as another physical device on your network.
   #
   # - Ref: [Public Networks - Networking | Vagrant | HashiCorp Developer](https://developer.hashicorp.com/vagrant/docs/networking/public_network)
   # - Ref: [Public Networks - Networking - Vagrant Parallels Provider Documentation](http://parallels.github.io/vagrant-parallels/docs/networking/public_network.html)
   #
-  # Create a public network, which generally matched to bridged network.
-  # Bridged networks make the machine appear as another physical device on
-  # your network.
-  #
+  # Create a public network:
   #config.vm.network "public_network"
 
   # SSH private key to login to VM:
