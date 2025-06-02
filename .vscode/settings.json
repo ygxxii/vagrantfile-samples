@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "*plays.yml": "ansible",
+        "*init.yml": "yaml",
+        "Vagrantfile": "ruby",
+        "Vagrantfile.*": "ruby",
+        "*.erb": "ruby",
+      }
+}
