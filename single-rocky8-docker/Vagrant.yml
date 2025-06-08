@@ -1,0 +1,22 @@
+global:
+  env:
+    VAGRANT_LOG: "debug"
+environments:
+  single-rocky8-docker:
+    vm:
+      box_name: "rockylinux/8"
+      box_url: "https://mirrors.aliyun.com/rockylinux/8/images/x86_64/Rocky-8-Vagrant-VMware.latest.x86_64.box"
+    forwarded_port:
+      docker:
+        host: 2375
+        guest: 2375
+        protocol: tcp
+    shell:
+      provisioning.sh:
+        args: ""
+    docker:
+      ubuntu:
+        image: "ubuntu:latest"
+        cmd: "tail -f /dev/null"
+      nginx:
+        image: "nginx:latest"
