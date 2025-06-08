@@ -1,0 +1,7 @@
+environments:
+  single-centos7:
+    vm:
+      box_name: "bento/centos-7"
+    shell:
+      provisioning.sh:
+        args: ""
