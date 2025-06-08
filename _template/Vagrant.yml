@@ -1,0 +1,97 @@
+global:
+  env:
+    LC_ALL: "en_US.UTF-8"
+    LC_CTYPE: "en_US.UTF-8"
+    VAGRANT_LOG: error
+    VAGRANT_NO_PARALLEL: 'no'
+  proxyconf:
+    # enabled: true
+    # enabled:
+    #   :apt: false
+    #   :chef: false
+    #   :docker: false
+    #   :evn: true
+    #   :git: true
+    #   :npm: false
+    #   :pear: false
+    #   :yum: false
+    http: ""
+    https: ""
+    ftp: ""
+    no_proxy: ""
+  hostmanager:
+    enabled: true
+    manage_host: false
+    manage_guest: true
+    ignore_private_ip: false
+    include_offline: true
+environments:
+  template-single-centos7:
+    vm:
+      box_name: "bento/centos-7"
+      # box_name: "bento/centos-7"
+      box_version: ">= 0"
+      # box_url: "https://mirrors.aliyun.com/rockylinux/8/images/x86_64/Rocky-8-Vagrant-VMware.latest.x86_64.box"
+      hostname: "template-host"
+      boot_timeout: 600
+      communicator: "ssh"
+      box_check_update: true
+    vmware_desktop:
+      # linked_clone: true
+      gui: true
+      # port_forward_network_pause: 8
+      ssh_info_public: false
+      allowlist_verified: true
+      vmx:
+        # displayName: "bento/centos-7"
+        numvcpus: "2"
+        memsize: "4096"
+        vhv.enable: false
+    synced_folder:
+      vagrant-root: false
+      # src:
+      #   host_path: '.'
+      #   guest_path: '/usr/local/src/'
+      #   params:
+      #     :create: true
+      #     # :type: nfs
+      #     :mount_options: ['nolock,vers=3,udp,noatime,actimeo=1']
+    # forwarded_port:
+      # forward_1:
+      #   host: 8080
+      #   guest: 80
+      # forward_2:
+      #   host: 8081
+      #   guest: 81
+      # ssh:
+      #   host: 22
+      #   guest: 2222
+      #   disabled: true
+    ssh:
+      insert_key: false
+      guest_port: 22
+      # password: "vagrant"
+      # port: 22
+      # host: "1.1.1.1"
+      # private_key_path: ""
+      keep_alive: true
+      connect_retries: 10
+      connect_timeout: 20
+    iterm2: false
+    shell:
+      provisioning.sh:
+        reboot: false
+        args: ""
+        keep_color: true
+        privileged: true
+      provisioning2.sh:
+        reboot: false
+        args: ""
+        keep_color: true
+        privileged: true
+    ansible:
+      # playbook.yml:
+      #   compatibility_mode: "2.0"
+      #   # raw_arguments: ["-vvv"]
+      #   # inventory_path: "hosts.yml"
+
