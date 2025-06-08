@@ -1,0 +1,12 @@
+environments:
+  single-centos7-docker:
+    vm:
+      box_name: "bento/centos-7"
+    forwarded_port:
+      docker:
+        host: 2375
+        guest: 2375
+        protocol: tcp
+    shell:
+      provisioning.sh:
+        args: ""
