@@ -1,0 +1,23 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Variables to set:
+#
+## Vagrant Box's Name:
+# BOX_NAME  = "bento/rockylinux-8"      # (for Provider 'parallels')
+BOX_NAME  = "rockylinux/8"            # (for Provider 'vmware_desktop')
+## VM's Name used by Vagrant:
+VM_NAME   = "template-single-rocky8"
+## VM's hostname (Linux hostname is limited to 255 bytes):
+HOST_NAME = VM_NAME
+## VM's CPU count:
+NODE_CPU  = "2"
+## VM's memory (MiB):
+NODE_MEM  = "4096"
+# Launch guest with the Hypervisor GUI:
+VM_GUI = false
+
+# Load the actual Vagrantfile:
+# vagrantfile_template = "../_template-single-rocky8/Vagrantfile.template"
+vagrantfile_template = "./Vagrantfile.template"
+load File.expand_path(vagrantfile_template) if File.exist?(vagrantfile_template)

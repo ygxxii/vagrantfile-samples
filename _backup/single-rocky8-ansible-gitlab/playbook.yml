@@ -1,0 +1,65 @@
+---
+- name: GitLab Installation
+  hosts: all
+  become: true
+
+  roles:
+    - role: geerlingguy.gitlab
+      environment:
+        GITLAB_ROOT_PASSWORD: "xy5D6FZHNs_RDp_UP9JQ"
+        # EXTERNAL_URL: "http://{{ ansible_default_ipv4.address|default(ansible_all_ipv4_addresses[0]) }}"
+      vars:
+        gitlab_edition: "gitlab-ee"
+        gitlab_download_validate_certs: true
+        # gitlab_version: "16.2.9"
+        gitlab_backup_keep_time: "604800"
+        gitlab_external_url: "http://{{ ansible_default_ipv4.address|default(ansible_all_ipv4_addresses[0]) }}"
+        gitlab_letsencrypt_enable: false
+        gitlab_time_zone: "Asia/Shanghai"
+        gitlab_default_theme: 1
+        gitlab_extra_settings:
+          - gitlab_rails:
+              - key: "gravatar_enabled"
+                type: "plain"
+                value: "true"   # "value: true" would be "True" (first letter is capitalized by Jinjia2)
+              - key: "gravatar_ssl_url"
+                value: "https://seccdn.libravatar.org/avatar/%{hash}?s=%{size}&d=identicon"
+              - key: "gravatar_plain_url"
+                value: "http://cdn.libravatar.org/avatar/%{hash}?s=%{size}&d=identicon"
+              - key: "monitoring_whitelist"
+                type: "plain"
+                value: |
+                  ['127.0.0.0/8', '0.0.0.0/0']
+              # - key: "time_zone"
+              #   value: "Asia/Shanghai"
+              # - key: "backup_keep_time"
+              #   value: 604800
+          - prometheus:
+              - key: "listen_address"
+                value: "0.0.0.0:9090"
+              - key: "flags"
+                type: "plain"
+                value: |
+                  {
+                    'storage.tsdb.retention.time' => "45d",
+                    'storage.tsdb.retention.size' => '10GB'
+                  }
+          - redis:
+              - key: "rename_commands"
+                type: "plain"
+                value: |
+                  {
+                      'KEYS': 'IFclDAqfXbaf4FhoFXiH',
+                  }
+  tasks:
+    - name: Schedule GitLab backups
+      ansible.builtin.cron:
+        name: GitLab application backup
+        minute: "0"
+        hour: "2"
+        day: "*"
+        month: "*"
+        weekday: "*"
+        user: root
+        job: "/opt/gitlab/bin/gitlab-backup create CRON=1"
+        cron_file: gitlab-backup

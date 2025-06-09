@@ -1,0 +1,23 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Variables to set:
+#
+## Vagrant Box's Name:
+# BOX_NAME  = "bento/centos-7"      # (for Provider 'parallels')
+BOX_NAME  = "bento/centos-7"            # (for Provider 'vmware_desktop')
+## VM's Name used by Vagrant:
+VM_NAME   = "template-single-centos7"
+## VM's Hostname:
+HOST_NAME = VM_NAME
+## VM's CPU count:
+NODE_CPU  = "2"
+## VM's memory (MiB):
+NODE_MEM  = "4096"
+# Launch guest with the GUI:
+VM_GUI = true
+
+# Load the actual Vagrantfile:
+# vagrantfile_template = "../_template-single-centos7/Vagrantfile.template"
+vagrantfile_template = "./Vagrantfile.template"
+load File.expand_path(vagrantfile_template) if File.exist?(vagrantfile_template)

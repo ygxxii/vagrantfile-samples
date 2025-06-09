@@ -1,0 +1,435 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Meant for VMware Workstation / Fusion
+
+# Print error information and exit:
+#
+# - Ref: [javiroman/TestBeds: Vagrant projects for testing technologies (testbed environments)](https://github.com/javiroman/TestBeds)
+# - Souce code: [vagrant/lib/vagrant/errors.rb at main · hashicorp/vagrant · GitHub](https://github.com/hashicorp/vagrant/blob/main/lib/vagrant/errors.rb)
+#
+#def fail_with_message(msg)
+#    fail Vagrant::Errors::VagrantError.new, msg
+#end
+#
+# - Usage:
+### fail_with_message "This is an error"
+
+
+# Print information:
+#
+# - Ref: [oracle/vagrant-projects: Vagrant projects for Oracle products and other examples](https://github.com/oracle/vagrant-projects)
+# - Souce code: [vagrant/lib/vagrant/ui.rb at main · hashicorp/vagrant · GitHub](https://github.com/hashicorp/vagrant/blob/main/lib/vagrant/ui.rb)
+#
+#ui = Vagrant::UI::Prefixed.new(Vagrant::UI::Colored.new, "vagrant")
+#
+# - Usage:
+### ui.info "This is an info"
+### ui.warn "This is a warn"
+### ui.error "This is an error"
+### ui.success "This is a success"
+
+# Windows - Check if elevated:
+#
+# - Ref: [Vagrantfile · main · GitLab.org / GitLab Development Kit · GitLab](https://gitlab.com/gitlab-org/gitlab-development-kit/-/blob/main/Vagrantfile?ref_type=heads)
+#
+def running_in_admin_mode?
+  return false unless Vagrant::Util::Platform.windows?
+  !`reg query HKU\\S-1-5-19 2>&1`.include?('ERROR')
+end
+if Vagrant::Util::Platform.windows? && !running_in_admin_mode?
+  fail_with_message "You must run Vagrant from an elevated command prompt!"
+end
+
+# Variables to set:
+#
+VM_NAME = "test-standalone"
+HOST_NAME = VM_NAME
+# HOST_NAME = "test-standalone"
+
+# Host Locale Environment Variables:
+#
+# Usually, host locale environment variables are passed to guest.
+#
+# - Ref: [Tips & Tricks - Vagrantfile | Vagrant | HashiCorp Developer](https://developer.hashicorp.com/vagrant/docs/vagrantfile/tips)
+#
+# To override host locale environment variables:
+ENV["LC_ALL"] = "en_US.UTF-8"
+
+
+# Vagrant Environment Variables:
+#
+# - Ref: [Environmental Variables | Vagrant | HashiCorp Developer](https://developer.hashicorp.com/vagrant/docs/other/environmental-variables)
+
+## VAGRANT_LOG:
+## Set Vagrant Log Level
+##
+## - Ref: [Debugging and Troubleshooting | Vagrant | HashiCorp Developer](https://developer.hashicorp.com/vagrant/docs/other/debugging)
+## - Value:
+##     - 'debug': loud
+##     - 'info': normal
+##     - 'warn': quiet
+##     - 'error': very quiet
+## - Default: "" (empty), Vagrant does not show any log messages
+##
+ENV['VAGRANT_LOG'] = 'error'
+
+## VAGRANT_NO_PARALLEL:
+## stop parallel operations
+##
+## - Default: "no", do not stop
+## 
+ENV['VAGRANT_NO_PARALLEL'] = 'no'
+
+
+# Minimum Vagrant version:
+#
+# - Ref: [Minimum Vagrant Version - Vagrantfile | Vagrant | HashiCorp Developer](https://developer.hashicorp.com/vagrant/docs/vagrantfile/vagrant_version)
+#
+Vagrant.require_version ">= 1.9.7"
+
+
+# Vagrantfile API/syntax version. 
+#
+# - Note: Don't touch unless you know what you're doing!
+#
+VAGRANTFILE_API_VERSION = "2" if not defined? VAGRANTFILE_API_VERSION
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+
+  # Install Vagrant Plugins:
+  #
+  # - Ref: [config.vagrant - Vagrantfile | Vagrant | HashiCorp Developer](https://developer.hashicorp.com/vagrant/docs/vagrantfile/vagrant_settings)
+  # - Sample:
+  ### config.vagrant.plugins = "vagrant-plugin"
+  ### config.vagrant.plugins = ["vagrant-plugin", "vagrant-other-plugin"]
+  #
+  config.vagrant.plugins = ["vagrant-vmware-desktop", "vagrant-proxyconf"]
+  
+  # Settings for 'vagrant-proxyconf' plugin:
+  #
+  # - Ref: [tmatilai/vagrant-proxyconf](https://github.com/tmatilai/vagrant-proxyconf)
+  # - Sample:
+  ### if Vagrant.has_plugin?("vagrant-proxyconf")
+  ###   config.proxy.http     = "http://<proxy-server>:<proxy-port>"
+  ###   config.proxy.https    = "http://<proxy-server>:<proxy-port>"
+  ###   config.proxy.no_proxy = "localhost,127.0.0.1"
+  ###   config.proxy.enabled = { pear: false, yum: false, docker: false }
+  ### end
+  #
+  #
+  # Or :
+  ### Disable plugin 'vagrant-proxyconf' completely:
+  ###
+  ### if Vagrant.has_plugin?("vagrant-proxyconf")
+  ###   config.proxy.enabled = false
+  ### end
+  #
+  if Vagrant.has_plugin?("vagrant-proxyconf")
+    config.proxy.enabled  = { pear: false, npm: false }
+  end
+  
+  # Vagrant Box:
+  #
+  # - Ref: [Install and Specify a Box | Vagrant | HashiCorp Developer](https://developer.hashicorp.com/vagrant/tutorials/getting-started/getting-started-boxes)
+  #
+  config.vm.box = "<%= box_name %>"
+  
+  # Vagrant Box version:
+  #
+  # - Ref: [Box Versioning | Vagrant | HashiCorp Developer](https://developer.hashicorp.com/vagrant/docs/boxes/versioning)
+  # - Default: ">= 0" (latest)
+  #
+  <% if box_version -%>
+  config.vm.box_version = "<%= box_version %>"
+  <% else -%>
+  config.vm.box_version = ">= 0"
+  <% end -%>
+
+  # URL of Vagrant Box to download:
+  <% if box_url -%>
+  config.vm.box_url = "<%= box_url %>"
+  <% else -%>
+  #config.vm.box_url = ""
+  <% end -%>
+
+  # Name of VM:
+  # used by Vagrant
+  #
+  # - Ref: [configuration - How to change Vagrant 'default' machine name? - Stack Overflow](https://stackoverflow.com/questions/17845637/how-to-change-vagrant-default-machine-name)
+  # - Default: "default"
+  # - Note: Do not change this after 'vagrant up' !
+  #
+  config.vm.define VM_NAME
+
+  # Hostname in VM:
+  # used by VM, '[vagrant@hotname]'
+  #
+  # - Default: "nil" (Vagrant will not manage the hostname)
+  # - Note: To change this option after VM is created, execute 'vagrant reload' is required.
+  #
+  config.vm.hostname = "#{HOST_NAME.downcase}"
+
+  # VM OS Type:
+  # Vagrant will auto-detect
+  #
+  # - Value:
+  #     - ':linux'
+  #     - ':windows'
+  # - Default: ':linux'
+  # - Note: Do not set this option when using VMware Workstation. Or error may occur:
+  #     "Vagrant attempted to execute the capability 'configure_networks'
+  #     on the detect guest OS 'linux', but the guest doesn't
+  #     support that capability. This capability is required for your
+  #     configuration of Vagrant. Please either reconfigure Vagrant to
+  #     avoid this capability or fix the issue by creating the capability."
+  #
+  config.vm.guest = :linux
+
+  # How long Vagrant will keep trying to connect to the VM before it assume something went wrong and times out:
+  #
+  # - Default: "300"
+  # - Unit: second
+  #
+  config.vm.boot_timeout = 600
+
+  # How to commumicate with the VM:
+  #
+  # - Vaule:
+  #     - "winrm": for Windows VM
+  #     - "ssh": for *nix VM
+  # - Default: "ssh"
+  #
+  config.vm.communicator = "ssh"
+
+  # Replace Vagrant's default insecure SSH key:
+  #
+  # - Ref: [config.ssh - Vagrantfile | Vagrant | HashiCorp Developer](https://developer.hashicorp.com/vagrant/docs/vagrantfile/ssh_settings)
+  # - Vaule:
+  #     - "true": Generate a new SSH keypair, and insert into the VM. This will replace Vagrant's default insecure key inside the VM.
+  #               New key: ".vagrant/machines/#{HOST_NAME}/parallels/private_key"
+  #     - "false": Do not replace. Still use Vagrant's default insecure key.
+  #                Old key: "~/.vagrant.d/insecure_private_key"
+  # - Default: "true"
+  #
+  #config.ssh.insert_key = false
+
+  # Disable the default Vagrant synced folder "/vagrant". Comment to enable:
+  #
+  # - Ref: [Basic Usage - Synced Folders | Vagrant | HashiCorp Developer](https://developer.hashicorp.com/vagrant/docs/synced-folders/basic_usage)
+  #
+  config.vm.synced_folder ".", "/vagrant", disabled: true
+
+  # Synced Folders:
+  #
+  # - Ref: [Basic Usage - Synced Folders | Vagrant | HashiCorp Developer](https://developer.hashicorp.com/vagrant/docs/synced-folders/basic_usage)
+  #
+  #config.vm.synced_folder "src/", "/srv/website"
+
+  # VMware Desktop Provider:
+  #
+  # - Ref: [Configuration - VMware Provider | Vagrant | HashiCorp Developer](https://developer.hashicorp.com/vagrant/docs/providers/vmware/configuration)
+  #
+  config.vm.provider "vmware_desktop" do |v|
+
+    # Launch guest with the GUI:
+    #
+    # - Default: false
+    # - Note: Set to 'false' is not recommended. It will cause VMware Workstation/ Fusion can not get the new VM's infomation.
+    #
+    v.gui = true
+
+    # Full Clone / Linked Clone:
+    # 
+    # - Value:
+    #     - 'false': Full Clone.
+    #         - Pro: Full image copy. Totally independent from the box.
+    #         - Con: Slower when 'vagrant up'. Use more disk space.
+    #     - 'true': Linked Clone.
+    #         - Pro: Faster when 'vagrant up'. Use less disk space.
+    #         - Con: The box deletion will make all its linked clones not working.
+    # - Default: 'true' (Recommended)
+    # - Note: Changes of this setting will take an effect only for newly created machines.
+    #
+    v.linked_clone = true
+
+    # Time to pause after applying port forwarding configuration:
+    # This allows guest time to acquire DHCP address if previous address is dropped when VMware network services are restarted.
+    #
+    # - Unit: seconds
+    #
+    v.port_forward_network_pause = 15
+
+    # Allow list VMX settings:
+    #
+    v.allowlist_verified = true
+
+    # Display name of VM:
+    # formerly "v.displayname"
+    v.vmx["displayName"] = "#{VM_NAME.downcase}"
+
+    # VM memory size:
+    #
+    # - Unit: MiB
+    #
+    v.vmx["memsize"] = "4096"
+
+    # VM number of CPUs:
+    #
+    v.vmx["numvcpus"] = "2"
+
+    # VM number of CPU cores per socket:
+    #
+    # - Note: 'numvcpus' must be divisible by 'cpuid.coresPerSocket'
+    #
+    v.vmx["cpuid.coresPerSocket"] = "1"
+
+    # Enable nested virtualization:
+    #
+    v.vmx["vhv.enable"] = "false"
+
+    # Use paravirtualized virtual hardware:
+    #
+    #v.vmx["ethernet0.virtualDev"] = "vmxnet3"
+
+    # eth0(ethernet0)'s networking mode is always NAT in Vagrant. You can change it to other mode:
+    #
+    # - Ref: [Networking | Vagrant | HashiCorp Developer](https://developer.hashicorp.com/vagrant/docs/networking#there-is-a-nat-available)
+    # - Ref: [Vagrant Box - eth0 NAT · Issue #2093 · hashicorp/vagrant](https://github.com/hashicorp/vagrant/issues/2093)
+    # - Value:
+    #     - "nat": NAT mode
+    #     - "hostonly": Host-Only mode
+    #     - "bridged": Bridged mode
+    # - Default: "nat"
+    # - Note: This may lead to inconsistent behavior.
+    #
+    # Change to Host-Only mode:
+    #v.vmx["ethernet0.connectiontype"] = "hostonly"
+
+    # Enable Promiscuous Mode:
+    #
+    # - Ref: [networking - Configuring Promiscuous Mode in VMware Workstation running on Windows 10 serving two Linux guests - Super User](https://superuser.com/questions/1139028/configuring-promiscuous-mode-in-vmware-workstation-running-on-windows-10-serving)
+    # - Value:
+    #     - "TRUE": Disable Promiscuous Mode
+    #     - "FALSE": Enable Promiscuous Mode
+    # - Default: "TRUE" (recommended)
+    # - Note: When promiscuous mode is enabled for a network adapter, all virtual machines connected to
+    #     the network adapter have the potential of reading all packets across that network, 
+    #     meaning only the virtual machines connected to that network adapter.
+    #
+    #v.vmx["ethernet%d.noPromisc"] = "FALSE"    # replace %d with the ethernet number
+
+  end # of v
+
+  # Enable provisioning with a shell script:
+  #
+  # - Ref:[Shell Scripts - Provisioning | Vagrant | HashiCorp Developer](https://developer.hashicorp.com/vagrant/docs/provisioning/shell)
+  #
+  config.vm.provision "shell" do |shell|
+    shell.inline = <<-'SHELL_SCRIPT'
+      echo " ====== Linux: Recording box generation date ====> "
+      date > /etc/vagrant_box_build_date
+      
+      # echo " ====== Linux: Set Timezone ====> "
+      # timedatectl set-timezone "Asia/Shanghai"
+    SHELL_SCRIPT
+    shell.reboot = false
+    shell.args = ""
+  end # of shell
+
+  # Empty provisioning for re-triggering Vagrant Plugin "vagrant-proxyconf":
+  #
+  config.vm.provision "proxyconf", run: "never", type: "shell" do |shell|
+    shell.inline = ""
+    shell.reboot = false
+    shell.args = ""
+  end # of shell
+
+  # Automatic box update checking:
+  #
+  # - Value:
+  #     - 'false': Turn off. Boxes will only be checked for updates when the user runs `vagrant box outdated`. This is not recommended.
+  #     - 'true': Turn on. If an update is found, Vagrant will tell the user.
+  # - Default: 'true'
+  # - Note: Updates will only be checked for boxes that properly support updates (boxes from HashiCorp's Vagrant Cloud or some other versioned box).
+  #
+  config.vm.box_check_update = true
+
+  # Forwarded Ports:
+  # 
+  # - Ref: [Forwarded Ports - Networking | Vagrant | HashiCorp Developer](https://developer.hashicorp.com/vagrant/docs/networking/forwarded_ports)
+  #
+  # Create a forwarded port mapping which allows access to a specific port
+  # within the machine from a port on the host machine. In the example below,
+  # accessing "localhost:8080" will access port 80 on the guest machine.
+  #
+  # - Note: This will enable public access to the opened port
+  #
+  #HOST_PORT = 8080
+  #GUEST_PORT = 8080
+  #config.vm.network "forwarded_port", guest: GUEST_PORT, host: HOST_PORT, protocol: "tcp"
+
+  # Create a forwarded port mapping which allows access to a specific port
+  # within the machine from a port on the host machine and only allow access
+  # via 127.0.0.1 to disable public access
+  #config.vm.network "forwarded_port", guest: 80, host: 8080, host_ip: "127.0.0.1"
+
+  # Private Networks:
+  # allows host-only access
+  #
+  # - Ref: [Private Networks - Networking | Vagrant | HashiCorp Developer](https://developer.hashicorp.com/vagrant/docs/networking/private_network)
+  #
+  # Create a private network, with a specific IP:
+  #config.vm.network "private_network", ip: "192.168.33.10"
+  #
+  # Create a private newtwork, get IP from DHCP:
+  #config.vm.network "private_network", type: "dhcp"
+
+  # Public Networks:
+  #
+  # - Ref: [Public Networks - Networking | Vagrant | HashiCorp Developer](https://developer.hashicorp.com/vagrant/docs/networking/public_network)
+  #
+  # Create a public network, which generally matched to bridged network.
+  # Bridged networks make the machine appear as another physical device on
+  # your network.
+  #
+  #config.vm.network "public_network"
+
+  # SSH private key to login to VM:
+  # If you're working with a team or company or with a custom box and you want more secure SSH, you should create your own keypair.
+  #
+  # - Ref: [vagrant/keys at main · hashicorp/vagrant](https://github.com/hashicorp/vagrant/tree/main/keys)
+  #
+  #config.ssh.private_key_path = ""
+
+  # SSH password to login to VM:
+  #
+  # - Ref: ["vagrant" User - Creating a Base Box | Vagrant | HashiCorp Developer](https://developer.hashicorp.com/vagrant/docs/boxes/base#vagrant-user)
+  # - Note: key-based authentication is recommended
+  #
+  #config.ssh.password = "vagrant"
+
+  # SSH Server port of VM:
+  #
+  # - Default: 22
+  #
+  config.ssh.guest_port = 22
+
+  # A message to show after 'vagrant up' / 'vagrant reload':
+  $msg = <<MSG
+------------------------------------------------------
+
+You can run following commands on the host:
+
+To SSH login to VM by Vagrant:      'vagrant ssh #{VM_NAME}'
+                            or      'vagrant ssh'
+To SSH login to VM by ssh:          'ssh vagrant@#{HOST_NAME} -i .vagrant/machines/#{HOST_NAME}/vmware_fusion/private_key'
+                                    'ssh vagrant@#{HOST_NAME} -i .vagrant/machines/#{HOST_NAME}/vmware_desktop/private_key'
+To check VM's status by Vagrant:    'vagrant status'
+To get all Vagrant sub-commands:    'vagrant list-commands'
+
+------------------------------------------------------
+MSG
+  config.vm.post_up_message = $msg
+
+end # of config
