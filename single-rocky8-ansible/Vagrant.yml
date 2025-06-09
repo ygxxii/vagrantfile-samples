@@ -1,0 +1,11 @@
+environments:
+  single-rocky8-ansible:
+    vm:
+      box_name: "rockylinux/8"
+      box_url: "https://mirrors.aliyun.com/rockylinux/8/images/x86_64/Rocky-8-Vagrant-VMware.latest.x86_64.box"
+    shell:
+      # provisioning.sh:
+      #   args: ""
+    ansible:
+      playbook.yml:
+        compatibility_mode: "2.0"
