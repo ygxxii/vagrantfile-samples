@@ -1,0 +1,23 @@
+global:
+  hostmanager:
+    enabled: true
+    manage_host: true
+environments:
+  single-rocky8-ansible-hosts:
+    vm:
+      box_name: "rockylinux/8"
+      box_url: "https://mirrors.aliyun.com/rockylinux/8/images/x86_64/Rocky-8-Vagrant-VMware.latest.x86_64.box"
+    forwarded_port:
+      ssh:
+        host: 22
+        guest: 2222
+        disabled: true
+    shell:
+      # provisioning.sh:
+      #   args: ""
+      provisioning-2.sh:
+        args: ""
+    ansible:
+      playbook.yml:
+        compatibility_mode: "2.0"
+        inventory_path: "hosts.yml"
