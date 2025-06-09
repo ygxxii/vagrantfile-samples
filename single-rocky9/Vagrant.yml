@@ -1,0 +1,8 @@
+environments:
+  single-rocky8:
+    vm:
+      box_name: "rockylinux/9"
+      box_url: "https://mirrors.aliyun.com/rockylinux/9/images/x86_64/Rocky-9-Vagrant-VMware.latest.x86_64.box"
+    shell:
+      provisioning.sh:
+        args: ""
